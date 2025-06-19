@@ -231,6 +231,39 @@ mutation {
 }
 ```
 
+#### Tests automatisés e2e (End-to-End)
+
+En plus des tests manuels dans GraphQL Playground, des **tests automatisés** ont été créés pour valider l'étape 4.
+
+**Comment lancer les tests e2e :**
+
+```bash
+# Lancer tous les tests e2e
+npm run test:e2e
+```
+
+**Ce qui est testé automatiquement :**
+
+1. **`test/app.e2e-spec.ts`** : Test de base (GET /)
+2. **`test/health.e2e-spec.ts`** : Endpoint Health + BullMQ (étape 2)
+3. **`test/graphql.e2e-spec.ts`** : Toutes les APIs GraphQL (étape 4)
+   - Ping original (étape 3)
+   - CRUD Users complet
+   - CRUD Documents avec APIs requises
+   - Validation des enums UserRole
+   - 11 tests couvrant tous les cas d'usage
+
+**Résultats attendus :**
+
+```
+Test Suites: 3 passed, 3 total
+Tests:       14 passed, 14 total
+```
+
+**Note :** Le warning "_worker process has failed to exit gracefully_" est normal avec NestJS + GraphQL + BullMQ et n'affecte pas le fonctionnement.
+
+**✅ Si tous les tests passent, les étapes 2, 3 et 4 sont entièrement validées !**
+
 ### 5. Développement des APIs
 
 - Résolveurs :
