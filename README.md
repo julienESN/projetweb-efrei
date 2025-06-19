@@ -45,7 +45,6 @@ docker compose up -d redis
 npm run start:dev
 
 # 3. Vérifier l'endpoint Health
-autossh
 curl http://localhost:3000/health   # → OK
 
 # 4. (Optionnel) Inspecter les jobs dans Redis
