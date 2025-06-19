@@ -35,6 +35,29 @@ Développer, par groupe de 3 à 4 étudiants, une plateforme sécurisée de gest
   - [Queues NestJS](https://docs.nestjs.com/techniques/queues)
   - [Redis Docker](https://hub.docker.com/_/redis)
 
+#### Tutoriel de test rapide
+
+```bash
+# 1. Lancer Redis (Docker)
+docker compose up -d redis
+
+# 2. Démarrer l'application NestJS en mode développement
+npm run start:dev
+
+# 3. Vérifier l'endpoint Health
+autossh
+curl http://localhost:3000/health   # → OK
+
+# 4. (Optionnel) Inspecter les jobs dans Redis
+docker exec -it secure-docs-redis redis-cli
+redis> keys bull:health:*
+redis> llen bull:health:completed
+
+# 5. Arrêter les services
+Ctrl+C   # pour arrêter NestJS
+docker compose down  # pour arrêter Redis
+```
+
 ### 3. Configuration GraphQL
 
 - Installer `@nestjs/graphql`
@@ -42,6 +65,28 @@ Développer, par groupe de 3 à 4 étudiants, une plateforme sécurisée de gest
 - Ajouter un premier résolveur retournant `{ result: "ok" }`
 - Tester l'API avec Postman ou GraphQL Playground
   - [Quick Start GraphQL NestJS](https://docs.nestjs.com/graphql/quick-start)
+
+#### Tester GraphQL
+
+1. S'assurer que l'application tourne (`npm run start:dev`).
+2. Ouvrir le Playground : http://localhost:3000/graphql
+3. Lancer la requête suivante :
+
+```graphql
+query {
+  result
+}
+```
+
+Vous devriez obtenir :
+
+```json
+{
+  "data": {
+    "result": "ok"
+  }
+}
+```
 
 ### 4. Conception de l'architecture
 
