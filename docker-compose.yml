@@ -1,0 +1,15 @@
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: secure-docs-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    command: ['redis-server', '--appendonly', 'yes']
+
+volumes:
+  redis_data:
+    driver: local
+# //docker compose up -d redis
