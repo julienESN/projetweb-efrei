@@ -8,6 +8,10 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { PingResolver } from './ping/ping.resolver';
+import { UserService } from './user/user.service';
+import { UserResolver } from './user/user.resolver';
+import { DocumentService } from './document/document.service';
+import { DocumentResolver } from './document/document.resolver';
 
 @Module({
   imports: [
@@ -26,6 +30,14 @@ import { PingResolver } from './ping/ping.resolver';
     }),
   ],
   controllers: [AppController, HealthController],
-  providers: [AppService, HealthProcessor, PingResolver],
+  providers: [
+    AppService,
+    HealthProcessor,
+    PingResolver,
+    UserService,
+    UserResolver,
+    DocumentService,
+    DocumentResolver,
+  ],
 })
 export class AppModule {}
