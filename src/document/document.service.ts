@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Document } from './document.model';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class DocumentService {
+  constructor(
+    @InjectQueue('document-events') private documentEventsQueue: Queue,
+  ) {}
+
   private documents: Document[] = [
     {
       id: '1',
@@ -48,6 +54,13 @@ export class DocumentService {
     };
 
     this.documents.push(newDocument);
+
+    this.documentEventsQueue.add('document-event', {
+      action: 'create',
+      documentId: newDocument.id,
+      timestamp: new Date(),
+    });
+
     return newDocument;
   }
 
@@ -69,6 +82,13 @@ export class DocumentService {
     if (docIndex === -1) return false;
 
     this.documents.splice(docIndex, 1);
+
+    this.documentEventsQueue.add('document-event', {
+      action: 'delete',
+      documentId: id,
+      timestamp: new Date(),
+    });
+
     return true;
   }
 }

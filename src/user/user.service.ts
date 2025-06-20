@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.model';
 import { UserRole } from '../common/enums/user-role.enum';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectQueue('user-events') private userEventsQueue: Queue,
+  ) {}
+
   private users: User[] = [
     {
       id: '1',
@@ -46,6 +52,13 @@ export class UserService {
     };
 
     this.users.push(newUser);
+
+    this.userEventsQueue.add('user-event', {
+      action: 'create',
+      userId: newUser.id,
+      timestamp: new Date(),
+    });
+
     return newUser;
   }
 
@@ -67,6 +80,13 @@ export class UserService {
     if (userIndex === -1) return false;
 
     this.users.splice(userIndex, 1);
+
+    this.userEventsQueue.add('user-event', {
+      action: 'delete',
+      userId: id,
+      timestamp: new Date(),
+    });
+
     return true;
   }
 }
