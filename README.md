@@ -267,13 +267,15 @@ Tests:       14 passed, 14 total
 ### 5. Développement des APIs
 
 - Résolveurs :
-  - `getDocumentsByUser()`
-  - `getDocumentById()`
+  - `getDocumentsByUser()` - Implémenté et testé
+  - `getDocumentById()` - Implémenté et testé
 - Mutations :
-  - `createDocument(title, description, fileUrl)`
-  - `deleteDocument(id)`
-  - (bonus) `updateDocument()`
+  - `createDocument(title, description, fileUrl)` - Implémenté et testé
+  - `deleteDocument(id)` - Implémenté et testé
+  - (bonus) `updateDocument()` - Implémenté et testé
 - Données stockées en mémoire dans un premier temps
+
+**Toutes les APIs sont fonctionnelles et testées automatiquement via les tests e2e.**
 
 ### 6. Intégration du Message Queuing
 
