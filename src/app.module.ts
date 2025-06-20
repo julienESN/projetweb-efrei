@@ -10,8 +10,10 @@ import { join } from 'path';
 import { PingResolver } from './ping/ping.resolver';
 import { UserService } from './user/user.service';
 import { UserResolver } from './user/user.resolver';
+import { UserEventsProcessor } from './user/user-events.processor';
 import { DocumentService } from './document/document.service';
 import { DocumentResolver } from './document/document.resolver';
+import { DocumentEventsProcessor } from './document/document-events.processor';
 
 @Module({
   imports: [
@@ -28,6 +30,12 @@ import { DocumentResolver } from './document/document.resolver';
     BullModule.registerQueue({
       name: 'health',
     }),
+    BullModule.registerQueue({
+      name: 'document-events',
+    }),
+    BullModule.registerQueue({
+      name: 'user-events',
+    }),
   ],
   controllers: [AppController, HealthController],
   providers: [
@@ -36,8 +44,10 @@ import { DocumentResolver } from './document/document.resolver';
     PingResolver,
     UserService,
     UserResolver,
+    UserEventsProcessor,
     DocumentService,
     DocumentResolver,
+    DocumentEventsProcessor,
   ],
 })
 export class AppModule {}

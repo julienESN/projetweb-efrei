@@ -283,6 +283,32 @@ Tests:       14 passed, 14 total
   - Envoyer un événement dans une queue
   - Le consumer loggue et traite l'événement (audit, analytics, etc.)
 
+#### Tester le queuing BullMQ (documents et utilisateurs)
+
+1. **Lancer l'environnement**
+
+```bash
+# Lancer Redis (Docker)
+docker compose up -d redis
+
+# Démarrer l'application NestJS en mode développement
+npm run start:dev
+```
+
+2. **Créer ou supprimer un document OU un utilisateur**
+
+- Ouvre GraphQL Playground : http://localhost:3000/graphql
+- Utilise les mutations suivantes :
+
+3. **Observer la console du backend**
+
+- Lors de la création/suppression d'un document, tu dois voir :
+  - `Ajout d'un job dans la queue document-events ...`
+  - `Event reçu dans la queue: ...`
+- Lors de la création/suppression d'un utilisateur, tu dois voir :
+  - `Ajout d'un job dans la queue user-events ...`
+  - `Event reçu dans la queue user-events: ...`
+
 ### 7. Intégration continue
 
 - Créer un dépôt GitHub
