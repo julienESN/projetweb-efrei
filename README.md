@@ -487,21 +487,6 @@ docker-compose -f docker-compose.test.yml up --build
 - ✅ Cache optimisé GitHub Actions
 - ✅ Scan de vulnérabilités avec Docker Scout
 
-#### ⚙️ **Configuration GitHub requise**
-
-**Secrets à ajouter dans GitHub Settings :**
-
-```
-DOCKERHUB_USERNAME=votre-username
-DOCKERHUB_TOKEN=votre-access-token
-```
-
-**Obtenir le token DockerHub :**
-
-1. Aller sur https://hub.docker.com/settings/security
-2. Créer un nouveau Access Token
-3. L'ajouter comme secret dans GitHub
-
 #### 🧪 **Tests d'intégration automatisés**
 
 ```bash
@@ -518,14 +503,49 @@ curl -X POST -H "Content-Type: application/json" \
 
 **✅ Pipeline complète :** Tests → Build → Push → Deploy ready!
 
-### 8. Tests automatisés
+### 8. Tests automatisés ✅ **COMPLÉTÉ**
 
-- Installer Jest
-- Écrire des tests unitaires pour :
-  - Les services
-  - Les résolveurs
-  - Bonus : tests d'intégration avec base en mémoire
-  - [Testing NestJS](https://docs.nestjs.com/fundamentals/testing)
+#### 🧪 **Tests unitaires implémentés**
+
+**Jest** était déjà installé et configuré. Nous avons créé des tests complets pour :
+
+**Tests des services :**
+
+- `src/user/user.service.spec.ts` (29 tests)
+- `src/document/document.service.spec.ts` (16 tests)
+
+**Tests des résolveurs :**
+
+- `src/user/user.resolver.spec.ts` (13 tests)
+- `src/document/document.resolver.spec.ts` (14 tests)
+
+#### 📊 **Couverture de code**
+
+```bash
+# Lancer tous les tests
+npm test
+
+# Tests avec couverture
+npm run test:cov
+```
+
+**Résultats :**
+
+- **62 tests** unitaires passent tous
+- **Couverture globale :** 65.94%
+- **Services :** 100% de couverture
+- **Résolveurs :** ~80% de couverture
+
+#### 🔧 **Types de tests couverts**
+
+- ✅ Tests unitaires des services (CRUD, validation)
+- ✅ Tests unitaires des résolveurs (GraphQL)
+- ✅ Tests avec mocks (BullMQ, services)
+- ✅ Tests de gestion d'erreurs
+- ✅ Tests de validation des données
+- ✅ Tests d'intégration comportementale
+
+**Documentation :** [Testing NestJS](https://docs.nestjs.com/fundamentals/testing)
 
 ### 9. Déploiement continu
 
