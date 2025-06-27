@@ -6,9 +6,7 @@ import { Queue } from 'bullmq';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectQueue('user-events') private userEventsQueue: Queue,
-  ) {}
+  constructor(@InjectQueue('user-events') private userEventsQueue: Queue) {}
 
   private users: User[] = [
     {
@@ -53,7 +51,7 @@ export class UserService {
 
     this.users.push(newUser);
 
-    this.userEventsQueue.add('user-event', {
+    void this.userEventsQueue.add('user-event', {
       action: 'create',
       userId: newUser.id,
       timestamp: new Date(),
@@ -81,7 +79,7 @@ export class UserService {
 
     this.users.splice(userIndex, 1);
 
-    this.userEventsQueue.add('user-event', {
+    void this.userEventsQueue.add('user-event', {
       action: 'delete',
       userId: id,
       timestamp: new Date(),

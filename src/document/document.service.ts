@@ -55,7 +55,7 @@ export class DocumentService {
 
     this.documents.push(newDocument);
 
-    this.documentEventsQueue.add('document-event', {
+    void this.documentEventsQueue.add('document-event', {
       action: 'create',
       documentId: newDocument.id,
       timestamp: new Date(),
@@ -83,7 +83,7 @@ export class DocumentService {
 
     this.documents.splice(docIndex, 1);
 
-    this.documentEventsQueue.add('document-event', {
+    void this.documentEventsQueue.add('document-event', {
       action: 'delete',
       documentId: id,
       timestamp: new Date(),
