@@ -6,9 +6,7 @@ import { Queue } from 'bullmq';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectQueue('user-events') private userEventsQueue: Queue,
-  ) {}
+  constructor(@InjectQueue('user-events') private userEventsQueue: Queue) {}
 
   private users: User[] = [
     {

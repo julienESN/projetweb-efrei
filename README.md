@@ -300,14 +300,132 @@ npm run start:dev
 - Ouvre GraphQL Playground : http://localhost:3000/graphql
 - Utilise les mutations suivantes :
 
+#### 🔹 **Mutations pour les UTILISATEURS** (queue: `user-events`)
+
+**Créer un utilisateur :**
+
+```graphql
+mutation {
+  createUser(
+    createUserInput: {
+      email: "test@example.com"
+      username: "testuser"
+      role: USER
+    }
+  ) {
+    id
+    email
+    username
+    role
+    createdAt
+  }
+}
+```
+
+**Supprimer un utilisateur :**
+
+```graphql
+mutation {
+  deleteUser(id: "3") # remplacez par l'ID de l'utilisateur créé
+}
+```
+
+#### 🔹 **Mutations pour les DOCUMENTS** (queue: `document-events`)
+
+**Créer un document :**
+
+```graphql
+mutation {
+  createDocument(
+    createDocumentInput: {
+      title: "Document de test BullMQ"
+      description: "Test de la queue document-events"
+      fileUrl: "https://example.com/test.pdf"
+      userId: "1"
+    }
+  ) {
+    id
+    title
+    description
+    fileUrl
+    userId
+    createdAt
+  }
+}
+```
+
+**Supprimer un document :**
+
+```graphql
+mutation {
+  deleteDocument(id: "3") # remplacez par l'ID du document créé
+}
+```
+
 3. **Observer la console du backend**
 
-- Lors de la création/suppression d'un document, tu dois voir :
-  - `Ajout d'un job dans la queue document-events ...`
-  - `Event reçu dans la queue: ...`
-- Lors de la création/suppression d'un utilisateur, tu dois voir :
-  - `Ajout d'un job dans la queue user-events ...`
-  - `Event reçu dans la queue user-events: ...`
+- Lors de la création/suppression d'un **document**, tu dois voir :
+  - `Event reçu dans la queue document-events: { action: 'create', documentId: 'X', timestamp: ... }`
+  - `Event reçu dans la queue document-events: { action: 'delete', documentId: 'X', timestamp: ... }`
+- Lors de la création/suppression d'un **utilisateur**, tu dois voir :
+  - `Event reçu dans la queue user-events: { action: 'create', userId: 'Y', timestamp: ... }`
+  - `Event reçu dans la queue user-events: { action: 'delete', userId: 'Y', timestamp: ... }`
+
+#### 🧪 **Séquence de test complète**
+
+```graphql
+# Test 1: Créer un utilisateur
+mutation {
+  createUser(
+    createUserInput: {
+      email: "bullmq@test.com"
+      username: "bullmqtest"
+      role: USER
+    }
+  ) {
+    id
+    email
+  }
+}
+
+# Test 2: Créer un document
+mutation {
+  createDocument(
+    createDocumentInput: {
+      title: "Test BullMQ"
+      description: "Queue test"
+      userId: "1"
+    }
+  ) {
+    id
+    title
+  }
+}
+
+# Test 3: Supprimer le document créé (remplacez l'ID)
+mutation {
+  deleteDocument(id: "3")
+}
+
+# Test 4: Supprimer l'utilisateur créé (remplacez l'ID)
+mutation {
+  deleteUser(id: "3")
+}
+```
+
+#### 🔍 **Vérification avancée avec Redis CLI** (optionnel)
+
+```bash
+# Accéder à Redis CLI
+docker exec -it secure-docs-redis redis-cli
+
+# Vérifier les queues
+redis> keys bull:*
+redis> llen bull:user-events:completed
+redis> llen bull:document-events:completed
+```
+
+**✅ Si vous voyez ces logs dans votre console, BullMQ est correctement configuré et fonctionne !**
 
 ### 7. Intégration continue
 
@@ -321,6 +439,84 @@ npm run start:dev
 - La tester localement
 - Modifier l'action GitHub pour builder l'image
   - [GitHub Actions](https://github.com/features/actions)
+
+#### 🐳 **Création et test de l'image Docker**
+
+**1. Dockerfile créé** avec optimisations :
+
+- Build multi-stage (réduction de la taille)
+- Image Alpine (légère)
+- Utilisateur non-root (sécurité)
+- Cache optimisé
+
+**2. Tester l'image localement :**
+
+```bash
+# Méthode 1: Construction manuelle
+docker build -t secure-docs:latest .
+docker run --name test-secure-docs -p 3001:3000 -d secure-docs:latest
+curl http://localhost:3001  # → Hello World!
+curl http://localhost:3001/health  # → OK
+docker stop test-secure-docs && docker rm test-secure-docs
+
+# Méthode 2: Script automatisé
+./scripts/test-docker.sh
+
+# Méthode 3: Docker Compose complet (avec Redis)
+docker-compose -f docker-compose.test.yml up --build
+```
+
+#### 🔄 **GitHub Actions CI/CD Pipeline**
+
+**Workflow créé** (`.github/workflows/ci.yml`) qui :
+
+**Job 1 - Tests et Qualité :**
+
+- ✅ Installation des dépendances (`npm ci`)
+- ✅ Linter ESLint (`npm run lint`)
+- ✅ Tests unitaires (`npm run test`)
+- ✅ Tests e2e (`npm run test:e2e`)
+- ✅ Build de l'application (`npm run build`)
+- ✅ Service Redis pour les tests
+
+**Job 2 - Docker Build & Push :**
+
+- ✅ Build de l'image Docker
+- ✅ Push vers DockerHub (sur `main` uniquement)
+- ✅ Tagging automatique (latest, sha, branch)
+- ✅ Cache optimisé GitHub Actions
+- ✅ Scan de vulnérabilités avec Docker Scout
+
+#### ⚙️ **Configuration GitHub requise**
+
+**Secrets à ajouter dans GitHub Settings :**
+
+```
+DOCKERHUB_USERNAME=votre-username
+DOCKERHUB_TOKEN=votre-access-token
+```
+
+**Obtenir le token DockerHub :**
+
+1. Aller sur https://hub.docker.com/settings/security
+2. Créer un nouveau Access Token
+3. L'ajouter comme secret dans GitHub
+
+#### 🧪 **Tests d'intégration automatisés**
+
+```bash
+# Tester localement avec Docker Compose
+docker-compose -f docker-compose.test.yml up --build
+
+# Vérifier les endpoints
+curl http://localhost:3000  # API de base
+curl http://localhost:3000/health  # Health check
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"query":"{ result }"}' \
+  http://localhost:3000/graphql  # GraphQL
+```
+
+**✅ Pipeline complète :** Tests → Build → Push → Deploy ready!
 
 ### 8. Tests automatisés
 
