@@ -3,7 +3,7 @@ import { Job } from 'bullmq';
 
 @Processor('user-events')
 export class UserEventsProcessor extends WorkerHost {
-  async process(job: Job<unknown>): Promise<void> {
+  process(job: Job<unknown>): void {
     console.log('Event reçu dans la queue user-events:', job.data);
   }
 }
