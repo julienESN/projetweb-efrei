@@ -11,6 +11,8 @@ services:
       - NODE_ENV=production
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      # Alternative: utiliser REDIS_URL au lieu de REDIS_HOST/PORT
+      # - REDIS_URL=redis://redis:6379
     depends_on:
       redis:
         condition: service_healthy
