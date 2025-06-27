@@ -3,12 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 
-interface GraphQLResponse<T = any> {
-  body: {
-    data: T;
-  };
-}
-
 describe('GraphQL (e2e)', () => {
   let app: INestApplication;
 

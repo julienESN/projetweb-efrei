@@ -44,4 +44,11 @@ export default tseslint.config(
       '@typescript-eslint/require-await': 'off',
     },
   },
+  // Configuration pour les processors BullMQ
+  {
+    files: ['**/*.processor.ts'],
+    rules: {
+      '@typescript-eslint/require-await': 'off',
+    },
+  },
 );
