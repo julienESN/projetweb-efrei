@@ -22,10 +22,19 @@ import { DocumentEventsProcessor } from './document/document-events.processor';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     BullModule.forRoot({
-      connection: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379'),
-      },
+      connection: process.env.REDIS_URL ? 
+        // Configuration avec URL Redis complète (pour services externes)
+        {
+          host: new URL(process.env.REDIS_URL).hostname,
+          port: parseInt(new URL(process.env.REDIS_URL).port) || 6379,
+          username: new URL(process.env.REDIS_URL).username || undefined,
+          password: new URL(process.env.REDIS_URL).password || undefined,
+        } :
+        // Configuration avec paramètres individuels (pour Redis intégré ou Docker Compose)
+        {
+          host: process.env.REDIS_HOST || 'localhost',
+          port: parseInt(process.env.REDIS_PORT || '6379'),
+        },
     }),
     BullModule.registerQueue({
       name: 'health',
