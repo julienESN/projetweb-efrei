@@ -400,7 +400,7 @@ Tests:       14 passed, 14 total
 
 **✅ Si tous les tests passent, les étapes 2, 3 et 4 sont entièrement validées !**
 
-### 5. Développement des APIs
+### 5. Développement des APIs  ✅ **COMPLÉTÉ**
 
 - Résolveurs :
   - `getDocumentsByUser()` - Implémenté et testé
@@ -413,7 +413,7 @@ Tests:       14 passed, 14 total
 
 **Toutes les APIs sont fonctionnelles et testées automatiquement via les tests e2e.**
 
-### 6. Intégration du Message Queuing
+### 6. Intégration du Message Queuing  ✅ **COMPLÉTÉ**
 
 - Lors de la création ou suppression d'un document :
   - Envoyer un événement dans une queue
