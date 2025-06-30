@@ -1,0 +1,21 @@
+{
+  "id": "projet-web-efrei-env",
+  "name": "Projet Web Efrei Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "enabled": true
+    },
+    {
+      "key": "lastCreatedUserId",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "lastCreatedDocumentId",
+      "value": "",
+      "enabled": true
+    }
+  ]
+} 

@@ -47,9 +47,72 @@ jobs:
       - name: Build de l'application
         run: npm run build
 
-  # Job 2: Build et Push de l'image Docker
-  docker-build:
+  # Job 2: Tests API avec Newman
+  newman-tests:
     needs: test-and-lint
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Build de l'application
+        run: npm run build
+
+      - name: Création du dossier test-results
+        run: mkdir -p test-results
+
+      - name: Démarrage de l'application en arrière-plan
+        run: |
+          npm run start:prod &
+          APP_PID=$!
+          echo "APP_PID=$APP_PID" >> $GITHUB_ENV
+
+      - name: Attente du démarrage de l'application
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health; do sleep 2; done'
+
+      - name: Exécution des tests Newman
+        run: npm run test:newman
+
+      - name: Publication des résultats de tests Newman
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Tests Newman
+          path: test-results/newman-results.xml
+          reporter: java-junit
+
+      - name: Arrêt de l'application
+        if: always()
+        run: |
+          if [ ! -z "$APP_PID" ]; then
+            kill $APP_PID || true
+          fi
+
+  # Job 3: Build et Push de l'image Docker
+  docker-build:
+    needs: [test-and-lint, newman-tests]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
