@@ -11,6 +11,6 @@ export class CreateDocumentInput {
   @Field({ nullable: true })
   fileUrl?: string;
 
-  @Field()
-  userId: string;
+  @Field({ nullable: true })
+  userId?: string;
 }

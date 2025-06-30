@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 
 describe('GraphQL (e2e)', () => {
   let app: INestApplication;
+  let adminToken: string;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -13,13 +14,33 @@ describe('GraphQL (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
+    // Obtenir un token admin pour les tests d'authentification
+    const loginResponse = await request(app.getHttpServer())
+      .post('/graphql')
+      .send({
+        query: `
+          mutation {
+            login(loginInput: { email: "admin@example.com", password: "password" }) {
+              access_token
+              user {
+                id
+                email
+                role
+              }
+            }
+          }
+        `,
+      });
+
+    adminToken = loginResponse.body.data.login.access_token;
   });
 
   afterEach(async () => {
     await app.close();
   });
 
-  // Test du ping original (étape 3)
+  // Test du ping original (étape 3) - pas d'auth requise
   it('should return "ok" for result query', () => {
     return request(app.getHttpServer())
       .post('/graphql')
@@ -41,6 +62,7 @@ describe('GraphQL (e2e)', () => {
     it('should return all users', () => {
       return request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
             query {
@@ -89,6 +111,7 @@ describe('GraphQL (e2e)', () => {
     it('should create a new user', () => {
       return request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
             mutation {
@@ -120,6 +143,7 @@ describe('GraphQL (e2e)', () => {
     it('should return all documents', () => {
       return request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
             query {
@@ -144,6 +168,7 @@ describe('GraphQL (e2e)', () => {
     it('should return documents by user id (API requise)', () => {
       return request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
             query {
@@ -169,6 +194,7 @@ describe('GraphQL (e2e)', () => {
     it('should return document by id (API requise)', () => {
       return request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
             query {
@@ -193,14 +219,14 @@ describe('GraphQL (e2e)', () => {
     it('should create a new document (API requise)', () => {
       return request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
             mutation {
               createDocument(createDocumentInput: {
                 title: "Nouveau document test"
-                description: "Description du test"
-                fileUrl: "https://example.com/test.pdf"
-                userId: "1"
+                description: "Description de test"
+                fileUrl: "http://example.com/test.pdf"
               }) {
                 id
                 title
@@ -217,19 +243,20 @@ describe('GraphQL (e2e)', () => {
             'Nouveau document test',
           );
           expect(res.body.data.createDocument.description).toBe(
-            'Description du test',
+            'Description de test',
           );
           expect(res.body.data.createDocument.fileUrl).toBe(
-            'https://example.com/test.pdf',
+            'http://example.com/test.pdf',
           );
-          expect(res.body.data.createDocument.userId).toBe('1');
           expect(res.body.data.createDocument.id).toBeDefined();
+          expect(res.body.data.createDocument.userId).toBe('1'); // Admin user ID
         });
     });
 
     it('should delete a document (API requise)', () => {
       return request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
             mutation {
@@ -246,12 +273,11 @@ describe('GraphQL (e2e)', () => {
     it('should update a document', () => {
       return request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
             mutation {
-              updateDocument(id: "1", updateDocumentInput: {
-                title: "Titre modifié"
-              }) {
+              updateDocument(id: "1", updateDocumentInput: { title: "Titre modifié" }) {
                 id
                 title
                 description
@@ -267,30 +293,28 @@ describe('GraphQL (e2e)', () => {
     });
   });
 
-  // Test des enums
-  describe('Enums', () => {
-    it('should handle UserRole enum correctly', () => {
-      return request(app.getHttpServer())
-        .post('/graphql')
-        .send({
-          query: `
-            mutation {
-              createUser(createUserInput: {
-                email: "admin2@example.com"
-                username: "admin2"
-                role: ADMIN
-              }) {
-                id
-                email
-                role
-              }
+  // Test UserRole enum
+  it('should handle UserRole enum correctly', () => {
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        query: `
+          query {
+            users {
+              role
             }
-          `,
-        })
-        .expect(200)
-        .expect((res) => {
-          expect(res.body.data.createUser.role).toBe('ADMIN');
-        });
-    });
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const users = res.body.data.users as Array<{ role: string }>;
+        const roles = users.map((user) => user.role);
+        expect(roles).toContain('ADMIN');
+        expect(roles).toContain('USER');
+        expect(roles).not.toContain('admin'); // Test que ce n'est pas en minuscules
+        expect(roles).not.toContain('user');
+      });
   });
 });

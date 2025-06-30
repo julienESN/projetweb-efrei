@@ -87,7 +87,93 @@ Vous devriez obtenir :
 }
 ```
 
-### 4. Conception de l'architecture
+### 4. 🔐 Authentification et Sécurité
+
+- **JWT Authentication** avec Passport.js
+- **Protection des routes** GraphQL avec guards
+- **Gestion des rôles** (ADMIN, USER)
+- **Hachage sécurisé** des mots de passe avec bcrypt
+
+#### Configuration rapide
+
+```bash
+# Les dépendances sont déjà installées
+# Configurer la variable d'environnement
+echo "JWT_SECRET=votre-clé-secrète-jwt-très-longue-et-complexe" >> .env
+```
+
+#### Tests d'authentification
+
+1. **Script de test automatique :**
+
+```bash
+# Depuis la racine du projet
+node src/auth/test-auth.script.js
+```
+
+2. **Test manuel dans GraphQL Playground :**
+
+```graphql
+# 1. Se connecter avec l'admin par défaut
+mutation {
+  login(loginInput: { email: "admin@example.com", password: "password" }) {
+    access_token
+    user {
+      id
+      email
+      username
+      role
+    }
+  }
+}
+
+# 2. Utiliser le token dans les headers pour les queries protégées
+# Headers: { "Authorization": "Bearer <votre_token>" }
+query {
+  me {
+    id
+    email
+    username
+    role
+  }
+}
+
+# 3. Tester l'inscription
+mutation {
+  register(
+    registerInput: {
+      email: "nouveau@example.com"
+      username: "nouveau_user"
+      password: "motdepasse123"
+      role: USER
+    }
+  ) {
+    access_token
+    user {
+      id
+      email
+      username
+      role
+    }
+  }
+}
+```
+
+#### Comptes par défaut
+
+| Email             | Mot de passe | Rôle  |
+| ----------------- | ------------ | ----- |
+| admin@example.com | password     | ADMIN |
+| user@example.com  | password     | USER  |
+
+#### Routes protégées
+
+- **USER** : `me`, `getDocumentsByUser`, `createDocument`, `updateDocument`, `deleteDocument`
+- **ADMIN** : `users`, `documents`, `createUser`, `deleteUser`
+
+📚 **Documentation complète :** [src/auth/README.md](src/auth/README.md)
+
+### 5. Conception de l'architecture
 
 - Modéliser les entités :
   - Utilisateur
@@ -544,16 +630,43 @@ npm run test:cov
 - ✅ Tests de gestion d'erreurs
 - ✅ Tests de validation des données
 - ✅ Tests d'intégration comportementale
+- ✅ **Tests d'authentification** (JWT, passwords, sécurité)
 
-**Documentation :** [Testing NestJS](https://docs.nestjs.com/fundamentals/testing)
+#### 🔐 **Tests d'authentification**
 
-### 9. Déploiement continu
+**Tests d'intégration AuthService :**
+
+```bash
+# Tests Jest spécialisés pour l'authentification
+npm test -- auth.integration.spec.ts
+```
+
+**Script de test manuel GraphQL :**
+
+```bash
+# Test complet du workflow d'authentification
+node src/auth/test-auth.script.js
+```
+
+**Tests couverts :**
+
+- ✅ Validation utilisateur (email/password)
+- ✅ Login avec identifiants valides/invalides
+- ✅ Inscription de nouveaux utilisateurs
+- ✅ Hachage sécurisé des mots de passe
+- ✅ Génération et validation de tokens JWT
+- ✅ Sécurité (pas d'exposition des passwords)
+- ✅ Routes protégées avec guards
+
+**Documentation :** [Testing NestJS](https://docs.nestjs.com/fundamentals/testing) | [Tests Auth](src/auth/README.md#tests)
+
+### 9. Déploiement continu ✅ **COMPLÉTÉ**
 
 - Modifier la GitHub Action pour :
   - ✅ Pousser l'image Docker sur DockerHub [Lien DockerHub](https://hub.docker.com/r/troxydev/secure-docs)
   - ✅ Déployer automatiquement via Render ou Heroku à chaque push sur main [Déploiement Render](https://projetweb-efrei.onrender.com/)
 
-### 10. Tests d'intégration
+### 10. Tests d'intégration ✅ **COMPLÉTÉ**
 
 - ✅ Créer une collection Postman pour tester les APIs [Collection Postman](https://sofianefares.postman.co/workspace/e649fe57-d047-469c-840c-e02347de9ae9/collection/46300404-f9c3ead2-d286-44c8-a499-2a36fcf61213?action=share&source=copy-link&creator=46300404)
 - Automatiser ces tests avec Newman
@@ -566,7 +679,7 @@ npm run test:cov
 - Créer et supprimer un document via l'UI
 - Framework libre : React, Vue, Angular...
 
-### 12. Authentification
+### 12. Authentification ✅ **COMPLÉTÉ**
 
 - Utiliser une librairie comme Auth0 ou Passport.js avec JWT
 - Protéger les routes sensibles

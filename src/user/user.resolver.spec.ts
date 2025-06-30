@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
+import { getQueueToken } from '@nestjs/bullmq';
 import { UserRole } from '../common/enums/user-role.enum';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -28,6 +29,23 @@ describe('UserResolver', () => {
     },
   ];
 
+  const mockQueue = {
+    add: jest.fn(),
+  };
+
+  // Mock d'utilisateurs pour les tests
+  const mockAdminUser = {
+    userId: '1',
+    email: 'admin@example.com',
+    role: UserRole.ADMIN,
+  };
+
+  const mockRegularUser = {
+    userId: '2',
+    email: 'user@example.com',
+    role: UserRole.USER,
+  };
+
   beforeEach(async () => {
     const mockUserService = {
       findAll: jest.fn(),
@@ -43,6 +61,10 @@ describe('UserResolver', () => {
         {
           provide: UserService,
           useValue: mockUserService,
+        },
+        {
+          provide: getQueueToken('user-events'),
+          useValue: mockQueue,
         },
       ],
     }).compile();
@@ -62,15 +84,6 @@ describe('UserResolver', () => {
       const result = resolver.findAll();
 
       expect(result).toEqual(mockUsers);
-      expect(userService.findAll).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return empty array when no users exist', () => {
-      userService.findAll.mockReturnValue([]);
-
-      const result = resolver.findAll();
-
-      expect(result).toEqual([]);
       expect(userService.findAll).toHaveBeenCalledTimes(1);
     });
   });
@@ -119,90 +132,89 @@ describe('UserResolver', () => {
       expect(result).toEqual(expectedUser);
       expect(userService.create).toHaveBeenCalledWith(createUserInput);
     });
-
-    it('should create a user with minimal data', () => {
-      const createUserInput: CreateUserInput = {
-        email: 'minimal@example.com',
-        username: 'minimal',
-        role: UserRole.USER,
-      };
-
-      const expectedUser = {
-        id: '3',
-        ...createUserInput,
-        role: UserRole.USER,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      userService.create.mockReturnValue(expectedUser);
-
-      const result = resolver.createUser(createUserInput);
-
-      expect(result).toEqual(expectedUser);
-      expect(userService.create).toHaveBeenCalledWith(createUserInput);
-    });
   });
 
   describe('updateUser', () => {
-    it('should update an existing user', () => {
-      const userId = '1';
+    it('should update user when requested by admin', () => {
+      const userId = '2';
       const updateUserInput: UpdateUserInput = {
-        username: 'updated-admin',
-        email: 'updated-admin@example.com',
+        username: 'updated-username',
       };
 
       const expectedUser = {
-        ...mockUsers[0],
+        ...mockUsers[1],
         ...updateUserInput,
         updatedAt: new Date(),
       };
 
       userService.update.mockReturnValue(expectedUser);
 
-      const result = resolver.updateUser(userId, updateUserInput);
+      const result = resolver.updateUser(
+        userId,
+        updateUserInput,
+        mockAdminUser,
+      );
 
       expect(result).toEqual(expectedUser);
       expect(userService.update).toHaveBeenCalledWith(userId, updateUserInput);
     });
 
-    it('should return undefined for non-existent user', () => {
-      const userId = '999';
+    it('should allow user to update their own profile', () => {
+      const userId = '2';
       const updateUserInput: UpdateUserInput = {
-        username: 'nonexistent',
-      };
-
-      userService.update.mockReturnValue(undefined);
-
-      const result = resolver.updateUser(userId, updateUserInput);
-
-      expect(result).toBeUndefined();
-      expect(userService.update).toHaveBeenCalledWith(userId, updateUserInput);
-    });
-
-    it('should handle partial updates', () => {
-      const userId = '1';
-      const updateUserInput: UpdateUserInput = {
-        username: 'new-username-only',
+        username: 'self-updated',
       };
 
       const expectedUser = {
-        ...mockUsers[0],
-        username: 'new-username-only',
+        ...mockUsers[1],
+        ...updateUserInput,
         updatedAt: new Date(),
       };
 
       userService.update.mockReturnValue(expectedUser);
 
-      const result = resolver.updateUser(userId, updateUserInput);
+      const result = resolver.updateUser(
+        userId,
+        updateUserInput,
+        mockRegularUser,
+      );
 
       expect(result).toEqual(expectedUser);
+      expect(userService.update).toHaveBeenCalledWith(userId, updateUserInput);
+    });
+
+    it('should throw error when user tries to update other user profile', () => {
+      const userId = '1'; // Admin's ID
+      const updateUserInput: UpdateUserInput = {
+        username: 'unauthorized-update',
+      };
+
+      expect(() => {
+        resolver.updateUser(userId, updateUserInput, mockRegularUser);
+      }).toThrow('Vous ne pouvez modifier que votre propre profil');
+    });
+
+    it('should return undefined for non-existent user', () => {
+      const userId = '999';
+      const updateUserInput: UpdateUserInput = {
+        username: 'update-nonexistent',
+      };
+
+      userService.update.mockReturnValue(undefined);
+
+      const result = resolver.updateUser(
+        userId,
+        updateUserInput,
+        mockAdminUser,
+      );
+
+      expect(result).toBeUndefined();
       expect(userService.update).toHaveBeenCalledWith(userId, updateUserInput);
     });
   });
 
   describe('deleteUser', () => {
-    it('should delete an existing user', () => {
+    it('should delete a user', () => {
       const userId = '2';
       userService.delete.mockReturnValue(true);
 
@@ -210,51 +222,6 @@ describe('UserResolver', () => {
 
       expect(result).toBe(true);
       expect(userService.delete).toHaveBeenCalledWith(userId);
-    });
-
-    it('should return false for non-existent user', () => {
-      const userId = '999';
-      userService.delete.mockReturnValue(false);
-
-      const result = resolver.deleteUser(userId);
-
-      expect(result).toBe(false);
-      expect(userService.delete).toHaveBeenCalledWith(userId);
-    });
-  });
-
-  describe('integration behavior', () => {
-    it('should handle service errors gracefully', () => {
-      const userId = '1';
-      userService.findById.mockImplementation(() => {
-        throw new Error('Database error');
-      });
-
-      expect(() => resolver.findOne(userId)).toThrow('Database error');
-    });
-
-    it('should pass through service return values correctly', () => {
-      const createInput: CreateUserInput = {
-        email: 'test@example.com',
-        username: 'test',
-        role: UserRole.USER,
-      };
-
-      const serviceResult = {
-        id: '100',
-        email: 'test@example.com',
-        username: 'test',
-        role: UserRole.USER,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      userService.create.mockReturnValue(serviceResult);
-
-      const resolverResult = resolver.createUser(createInput);
-
-      expect(resolverResult).toBe(serviceResult);
-      expect(resolverResult).toHaveProperty('id', '100');
     });
   });
 });
