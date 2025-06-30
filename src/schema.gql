@@ -62,7 +62,7 @@ input CreateDocumentInput {
   title: String!
   description: String!
   fileUrl: String
-  userId: String!
+  userId: String
 }
 
 input UpdateDocumentInput {
