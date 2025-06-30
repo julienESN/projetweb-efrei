@@ -550,13 +550,12 @@ npm run test:cov
 ### 9. Déploiement continu
 
 - Modifier la GitHub Action pour :
-  - Pousser l'image Docker sur DockerHub
-  - Déployer automatiquement via Render ou Heroku à chaque push sur main
-  - [Déploiement Render](https://docs.render.com/web-services#deploy-from-a-container-registry)
+  - ✅ Pousser l'image Docker sur DockerHub [Lien DockerHub](https://hub.docker.com/r/troxydev/secure-docs)
+  - ✅ Déployer automatiquement via Render ou Heroku à chaque push sur main [Déploiement Render](https://projetweb-efrei.onrender.com/)
 
 ### 10. Tests d'intégration
 
-- Créer une collection Postman pour tester les APIs
+- ✅ Créer une collection Postman pour tester les APIs [Collection Postman](https://sofianefares.postman.co/workspace/e649fe57-d047-469c-840c-e02347de9ae9/collection/46300404-f9c3ead2-d286-44c8-a499-2a36fcf61213?action=share&source=copy-link&creator=46300404)
 - Automatiser ces tests avec Newman
 - Les intégrer dans la pipeline GitHub Actions
 
