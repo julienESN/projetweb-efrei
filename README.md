@@ -567,6 +567,45 @@ npm run test:cov
 - Créer et supprimer un document via l'UI
 - Framework libre : React, Vue, Angular...
 
+---
+
+## 🚀 Frontend (React + Vite + Tailwind)
+
+### Installation et lancement du front
+
+1. Placez-vous à la racine du projet (là où se trouve le dossier `frontend`).
+2. Installez les dépendances du front :
+   ```bash
+   cd frontend
+   npm install
+   ```
+3. Lancez le serveur de développement React :
+   ```bash
+   npm run dev
+   ```
+4. Ouvrez votre navigateur à l'adresse indiquée (par défaut : http://localhost:5173/)
+
+### Structure du dossier frontend
+
+- `frontend/`
+  - `src/`
+    - `pages/` : pages principales de l'application (Home, Dashboard, Documents, etc.)
+    - `components/` : composants réutilisables (Navbar, etc.)
+    - `App.tsx` : point d'entrée principal React
+    - `main.tsx` : bootstrap React
+    - `index.css` : import Tailwind CSS
+  - `tailwind.config.js` : configuration Tailwind
+  - `postcss.config.cjs` : configuration PostCSS
+  - `package.json` : dépendances et scripts du front
+
+### Points importants
+
+- Le front et le back sont totalement séparés (chacun son `node_modules` et son `package.json`).
+- Pour lancer le front, il faut toujours être dans le dossier `frontend`.
+- Le front consomme l'API GraphQL du back (voir la config de l'URL dans le code front si besoin).
+
+---
+
 ### 12. Authentification
 
 - Utiliser une librairie comme Auth0 ou Passport.js avec JWT

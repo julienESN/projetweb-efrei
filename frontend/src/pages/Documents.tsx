@@ -1,8 +1,20 @@
+import { useQuery } from '@apollo/client';
+import { GET_DOCUMENTS } from '../graphql/queries';
+
 export default function Documents() {
+  const { data, loading, error } = useQuery(GET_DOCUMENTS);
+
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur : {error.message}</p>;
+
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-4">Mes documents</h2>
-      <p>Liste de vos documents ici.</p>
+    <div>
+      <h2>Mes documents</h2>
+      <ul>
+        {data.documents.map((doc: any) => (
+          <li key={doc.id}>{doc.title}</li>
+        ))}
+      </ul>
     </div>
   );
 }
