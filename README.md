@@ -87,7 +87,93 @@ Vous devriez obtenir :
 }
 ```
 
-### 4. Conception de l'architecture
+### 4. 🔐 Authentification et Sécurité
+
+- **JWT Authentication** avec Passport.js
+- **Protection des routes** GraphQL avec guards
+- **Gestion des rôles** (ADMIN, USER)
+- **Hachage sécurisé** des mots de passe avec bcrypt
+
+#### Configuration rapide
+
+```bash
+# Les dépendances sont déjà installées
+# Configurer la variable d'environnement
+echo "JWT_SECRET=votre-clé-secrète-jwt-très-longue-et-complexe" >> .env
+```
+
+#### Tests d'authentification
+
+1. **Script de test automatique :**
+
+```bash
+# Depuis la racine du projet
+node src/auth/test-auth.script.js
+```
+
+2. **Test manuel dans GraphQL Playground :**
+
+```graphql
+# 1. Se connecter avec l'admin par défaut
+mutation {
+  login(loginInput: { email: "admin@example.com", password: "password" }) {
+    access_token
+    user {
+      id
+      email
+      username
+      role
+    }
+  }
+}
+
+# 2. Utiliser le token dans les headers pour les queries protégées
+# Headers: { "Authorization": "Bearer <votre_token>" }
+query {
+  me {
+    id
+    email
+    username
+    role
+  }
+}
+
+# 3. Tester l'inscription
+mutation {
+  register(
+    registerInput: {
+      email: "nouveau@example.com"
+      username: "nouveau_user"
+      password: "motdepasse123"
+      role: USER
+    }
+  ) {
+    access_token
+    user {
+      id
+      email
+      username
+      role
+    }
+  }
+}
+```
+
+#### Comptes par défaut
+
+| Email             | Mot de passe | Rôle  |
+| ----------------- | ------------ | ----- |
+| admin@example.com | password     | ADMIN |
+| user@example.com  | password     | USER  |
+
+#### Routes protégées
+
+- **USER** : `me`, `getDocumentsByUser`, `createDocument`, `updateDocument`, `deleteDocument`
+- **ADMIN** : `users`, `documents`, `createUser`, `deleteUser`
+
+📚 **Documentation complète :** [src/auth/README.md](src/auth/README.md)
+
+### 5. Conception de l'architecture
 
 - Modéliser les entités :
   - Utilisateur
@@ -119,13 +205,54 @@ npm run start:dev
 
 3. **Tests des queries de base :**
 
+#### 🔓 **Tests PUBLICS (sans authentification) :**
+
 ```graphql
 # Test 1 : Ping original (étape 3)
 query {
   result
 }
 
-# Test 2 : Lister tous les utilisateurs
+# Test 3 : Récupérer un utilisateur par ID (lecture publique)
+query {
+  user(id: "1") {
+    id
+    email
+    username
+    role
+  }
+}
+```
+
+#### 🔐 **Tests PROTÉGÉS (nécessitent authentification JWT) :**
+
+**Étape préalable - Se connecter pour obtenir un token :**
+
+```graphql
+mutation {
+  login(loginInput: { email: "admin@example.com", password: "password" }) {
+    access_token
+    user {
+      id
+      email
+      role
+    }
+  }
+}
+```
+
+**Puis ajouter le token dans les Headers :**
+
+```json
+{
+  "Authorization": "Bearer VOTRE_TOKEN_ICI"
+}
+```
+
+**Queries protégées :**
+
+```graphql
+# Test 2 : Lister tous les utilisateurs (ADMIN requis)
 query {
   users {
     id
@@ -136,17 +263,7 @@ query {
   }
 }
 
-# Test 3 : Récupérer un utilisateur par ID
-query {
-  user(id: "1") {
-    id
-    email
-    username
-    role
-  }
-}
-
-# Test 4 : Lister tous les documents
+# Test 4 : Lister tous les documents (ADMIN requis)
 query {
   documents {
     id
@@ -157,7 +274,7 @@ query {
   }
 }
 
-# Test 5 : Documents par utilisateur (API requise)
+# Test 5 : Documents par utilisateur (Auth requise)
 query {
   getDocumentsByUser(userId: "1") {
     id
@@ -167,7 +284,7 @@ query {
   }
 }
 
-# Test 6 : Document par ID (API requise)
+# Test 6 : Document par ID (Auth requise)
 query {
   getDocumentById(id: "1") {
     id
@@ -179,10 +296,12 @@ query {
 }
 ```
 
-4. **Tests des mutations :**
+4. **Tests des mutations (toutes protégées) :**
+
+**⚠️ Toutes les mutations nécessitent l'authentification JWT !**
 
 ```graphql
-# Test 7 : Créer un utilisateur
+# Test 7 : Créer un utilisateur (ADMIN requis)
 mutation {
   createUser(
     createUserInput: {
@@ -198,14 +317,14 @@ mutation {
   }
 }
 
-# Test 8 : Créer un document (API requise)
+# Test 8 : Créer un document (Auth requise, userId automatique)
 mutation {
   createDocument(
     createDocumentInput: {
       title: "Document de test"
       description: "Ceci est un test"
       fileUrl: "https://example.com/test.pdf"
-      userId: "1"
+      # userId automatiquement ajouté depuis le token JWT
     }
   ) {
     id
@@ -216,12 +335,12 @@ mutation {
   }
 }
 
-# Test 9 : Supprimer un document (API requise)
+# Test 9 : Supprimer un document (Auth requise)
 mutation {
   deleteDocument(id: "2")
 }
 
-# Test 10 : Mettre à jour un document
+# Test 10 : Mettre à jour un document (Auth requise)
 mutation {
   updateDocument(id: "1", updateDocumentInput: { title: "Titre modifié" }) {
     id
@@ -230,6 +349,22 @@ mutation {
   }
 }
 ```
+
+#### 📋 **Résumé des niveaux d'accès :**
+
+| Test      | Route           | Accès     | Commentaire         |
+| --------- | --------------- | --------- | ------------------- |
+| Test 1    | `result`        | 🔓 Public | Ping de base        |
+| Test 3    | `user(id)`      | 🔓 Public | Lecture utilisateur |
+| Test 2    | `users`         | 🔐 ADMIN  | Liste complète      |
+| Test 4    | `documents`     | 🔐 ADMIN  | Liste complète      |
+| Tests 5-6 | `getDocuments*` | 🔐 USER+  | Avec restrictions   |
+| Tests 7+  | Mutations       | 🔐 USER+  | Selon action        |
+
+**🔑 Comptes de test :**
+
+- **Admin** : `admin@example.com` / `password` (accès total)
+- **User** : `user@example.com` / `password` (accès limité)
 
 #### Tests automatisés e2e (End-to-End)
 
@@ -246,12 +381,13 @@ npm run test:e2e
 
 1. **`test/app.e2e-spec.ts`** : Test de base (GET /)
 2. **`test/health.e2e-spec.ts`** : Endpoint Health + BullMQ (étape 2)
-3. **`test/graphql.e2e-spec.ts`** : Toutes les APIs GraphQL (étape 4)
-   - Ping original (étape 3)
-   - CRUD Users complet
-   - CRUD Documents avec APIs requises
+3. **`test/graphql.e2e-spec.ts`** : Toutes les APIs GraphQL avec authentification
+   - Ping original (étape 3) - public
+   - CRUD Users complet - protégé ADMIN
+   - CRUD Documents avec APIs requises - protégé auth
    - Validation des enums UserRole
-   - 11 tests couvrant tous les cas d'usage
+   - Tests d'authentification JWT intégrés
+   - 14 tests couvrant tous les cas d'usage
 
 **Résultats attendus :**
 
@@ -264,7 +400,7 @@ Tests:       14 passed, 14 total
 
 **✅ Si tous les tests passent, les étapes 2, 3 et 4 sont entièrement validées !**
 
-### 5. Développement des APIs
+### 5. Développement des APIs  ✅ **COMPLÉTÉ**
 
 - Résolveurs :
   - `getDocumentsByUser()` - Implémenté et testé
@@ -277,7 +413,7 @@ Tests:       14 passed, 14 total
 
 **Toutes les APIs sont fonctionnelles et testées automatiquement via les tests e2e.**
 
-### 6. Intégration du Message Queuing
+### 6. Intégration du Message Queuing  ✅ **COMPLÉTÉ**
 
 - Lors de la création ou suppression d'un document :
   - Envoyer un événement dans une queue
@@ -304,6 +440,8 @@ npm run start:dev
 
 **Créer un utilisateur :**
 
+⚠️ **Nécessite authentification JWT ADMIN - ajouter le header Authorization !**
+
 ```graphql
 mutation {
   createUser(
@@ -324,6 +462,8 @@ mutation {
 
 **Supprimer un utilisateur :**
 
+⚠️ **Nécessite authentification JWT ADMIN - ajouter le header Authorization !**
+
 ```graphql
 mutation {
   deleteUser(id: "3") # remplacez par l'ID de l'utilisateur créé
@@ -334,6 +474,8 @@ mutation {
 
 **Créer un document :**
 
+⚠️ **Nécessite authentification JWT - ajouter le header Authorization !**
+
 ```graphql
 mutation {
   createDocument(
@@ -341,7 +483,7 @@ mutation {
       title: "Document de test BullMQ"
       description: "Test de la queue document-events"
       fileUrl: "https://example.com/test.pdf"
-      userId: "1"
+      # userId automatiquement ajouté depuis le token JWT
     }
   ) {
     id
@@ -355,6 +497,8 @@ mutation {
 ```
 
 **Supprimer un document :**
+
+⚠️ **Nécessite authentification JWT - ajouter le header Authorization !**
 
 ```graphql
 mutation {
@@ -373,8 +517,29 @@ mutation {
 
 #### 🧪 **Séquence de test complète**
 
+⚠️ **Toutes ces mutations nécessitent l'authentification JWT !**
+
+**Étape préalable :**
+
 ```graphql
-# Test 1: Créer un utilisateur
+# Se connecter pour obtenir un token
+mutation {
+  login(loginInput: { email: "admin@example.com", password: "password" }) {
+    access_token
+  }
+}
+```
+
+**Headers à ajouter :**
+
+```json
+{ "Authorization": "Bearer VOTRE_TOKEN" }
+```
+
+**Tests avec authentification :**
+
+```graphql
+# Test 1: Créer un utilisateur (ADMIN requis)
 mutation {
   createUser(
     createUserInput: {
@@ -388,13 +553,13 @@ mutation {
   }
 }
 
-# Test 2: Créer un document
+# Test 2: Créer un document (Auth requise)
 mutation {
   createDocument(
     createDocumentInput: {
       title: "Test BullMQ"
       description: "Queue test"
-      userId: "1"
+      # userId automatiquement ajouté depuis le token JWT
     }
   ) {
     id
@@ -402,14 +567,14 @@ mutation {
   }
 }
 
-# Test 3: Supprimer le document créé (remplacez l'ID)
+# Test 3: Supprimer le document créé (Auth requise)
 mutation {
-  deleteDocument(id: "3")
+  deleteDocument(id: "3") # remplacez par l'ID du document créé
 }
 
-# Test 4: Supprimer l'utilisateur créé (remplacez l'ID)
+# Test 4: Supprimer l'utilisateur créé (ADMIN requis)
 mutation {
-  deleteUser(id: "3")
+  deleteUser(id: "3") # remplacez par l'ID de l'utilisateur créé
 }
 ```
 
@@ -531,10 +696,12 @@ npm run test:cov
 
 **Résultats :**
 
-- **62 tests** unitaires passent tous
+- **67 tests** unitaires et d'intégration passent tous
+- **14 tests** e2e GraphQL avec authentification
 - **Couverture globale :** 65.94%
 - **Services :** 100% de couverture
 - **Résolveurs :** ~80% de couverture
+- **Authentification :** 100% testée
 
 #### 🔧 **Types de tests couverts**
 
@@ -544,19 +711,45 @@ npm run test:cov
 - ✅ Tests de gestion d'erreurs
 - ✅ Tests de validation des données
 - ✅ Tests d'intégration comportementale
+- ✅ **Tests d'authentification** (JWT, passwords, sécurité)
 
-**Documentation :** [Testing NestJS](https://docs.nestjs.com/fundamentals/testing)
+#### 🔐 **Tests d'authentification**
 
-### 9. Déploiement continu
+**Tests d'intégration AuthService :**
+
+```bash
+# Tests Jest spécialisés pour l'authentification
+npm test -- auth.integration.spec.ts
+```
+
+**Script de test manuel GraphQL :**
+
+```bash
+# Test complet du workflow d'authentification
+node src/auth/test-auth.script.js
+```
+
+**Tests couverts :**
+
+- ✅ Validation utilisateur (email/password)
+- ✅ Login avec identifiants valides/invalides
+- ✅ Inscription de nouveaux utilisateurs
+- ✅ Hachage sécurisé des mots de passe
+- ✅ Génération et validation de tokens JWT
+- ✅ Sécurité (pas d'exposition des passwords)
+- ✅ Routes protégées avec guards
+
+**Documentation :** [Testing NestJS](https://docs.nestjs.com/fundamentals/testing) | [Tests Auth](src/auth/README.md#tests)
+
+### 9. Déploiement continu ✅ **COMPLÉTÉ**
 
 - Modifier la GitHub Action pour :
-  - Pousser l'image Docker sur DockerHub
-  - Déployer automatiquement via Render ou Heroku à chaque push sur main
-  - [Déploiement Render](https://docs.render.com/web-services#deploy-from-a-container-registry)
+  - ✅ Pousser l'image Docker sur DockerHub [Lien DockerHub](https://hub.docker.com/r/troxydev/secure-docs)
+  - ✅ Déployer automatiquement via Render ou Heroku à chaque push sur main [Déploiement Render](https://projetweb-efrei.onrender.com/)
 
-### 10. Tests d'intégration
+### 10. Tests d'intégration ✅ **COMPLÉTÉ**
 
-- Créer une collection Postman pour tester les APIs
+- ✅ Créer une collection Postman pour tester les APIs [Collection Postman](https://sofianefares.postman.co/workspace/e649fe57-d047-469c-840c-e02347de9ae9/collection/46300404-f9c3ead2-d286-44c8-a499-2a36fcf61213?action=share&source=copy-link&creator=46300404)
 - Automatiser ces tests avec Newman
 - Les intégrer dans la pipeline GitHub Actions
 
@@ -606,7 +799,7 @@ npm run test:cov
 
 ---
 
-### 12. Authentification
+### 12. Authentification ✅ **COMPLÉTÉ**
 
 - Utiliser une librairie comme Auth0 ou Passport.js avec JWT
 - Protéger les routes sensibles

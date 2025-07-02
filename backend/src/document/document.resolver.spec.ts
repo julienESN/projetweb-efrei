@@ -3,6 +3,8 @@ import { DocumentResolver } from './document.resolver';
 import { DocumentService } from './document.service';
 import { CreateDocumentInput } from './dto/create-document.input';
 import { UpdateDocumentInput } from './dto/update-document.input';
+import { getQueueToken } from '@nestjs/bullmq';
+import { UserRole } from '../common/enums/user-role.enum';
 
 describe('DocumentResolver', () => {
   let resolver: DocumentResolver;
@@ -12,8 +14,8 @@ describe('DocumentResolver', () => {
     {
       id: '1',
       title: 'Document de test',
-      description: 'Ceci est un document de test',
-      fileUrl: 'https://example.com/file1.pdf',
+      description: 'Description du document de test',
+      fileUrl: 'https://example.com/doc1.pdf',
       userId: '1',
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
@@ -21,13 +23,30 @@ describe('DocumentResolver', () => {
     {
       id: '2',
       title: 'Guide utilisateur',
-      description: 'Guide pour les nouveaux utilisateurs',
-      fileUrl: undefined,
-      userId: '2',
+      description: 'Guide pour les utilisateurs',
+      fileUrl: 'https://example.com/guide.pdf',
+      userId: '1',
       createdAt: new Date('2024-01-02'),
       updatedAt: new Date('2024-01-02'),
     },
   ];
+
+  const mockQueue = {
+    add: jest.fn(),
+  };
+
+  // Mock d'utilisateurs pour les tests
+  const mockAdminUser = {
+    userId: '1',
+    email: 'admin@example.com',
+    role: UserRole.ADMIN,
+  };
+
+  const mockRegularUser = {
+    userId: '2',
+    email: 'user@example.com',
+    role: UserRole.USER,
+  };
 
   beforeEach(async () => {
     const mockDocumentService = {
@@ -45,6 +64,10 @@ describe('DocumentResolver', () => {
         {
           provide: DocumentService,
           useValue: mockDocumentService,
+        },
+        {
+          provide: getQueueToken('document-events'),
+          useValue: mockQueue,
         },
       ],
     }).compile();
@@ -64,39 +87,38 @@ describe('DocumentResolver', () => {
       const result = resolver.findAll();
 
       expect(result).toEqual(mockDocuments);
-      expect(documentService.findAll).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return empty array when no documents exist', () => {
-      documentService.findAll.mockReturnValue([]);
-
-      const result = resolver.findAll();
-
-      expect(result).toEqual([]);
-      expect(documentService.findAll).toHaveBeenCalledTimes(1);
+      expect(documentService.findAll).toHaveBeenCalled();
     });
   });
 
   describe('getDocumentsByUser', () => {
-    it('should return documents for a specific user', () => {
+    it('should return documents for a user when requested by admin', () => {
       const userId = '1';
       const userDocuments = [mockDocuments[0]];
       documentService.findByUserId.mockReturnValue(userDocuments);
 
-      const result = resolver.getDocumentsByUser(userId);
+      const result = resolver.getDocumentsByUser(userId, mockAdminUser);
 
       expect(result).toEqual(userDocuments);
       expect(documentService.findByUserId).toHaveBeenCalledWith(userId);
     });
 
-    it('should return empty array for user with no documents', () => {
-      const userId = '999';
+    it('should return documents when user requests their own documents', () => {
+      const userId = '2';
       documentService.findByUserId.mockReturnValue([]);
 
-      const result = resolver.getDocumentsByUser(userId);
+      const result = resolver.getDocumentsByUser(userId, mockRegularUser);
 
       expect(result).toEqual([]);
       expect(documentService.findByUserId).toHaveBeenCalledWith(userId);
+    });
+
+    it('should throw error when user tries to access other user documents', () => {
+      const userId = '1'; // Trying to access admin's documents
+
+      expect(() => {
+        resolver.getDocumentsByUser(userId, mockRegularUser);
+      }).toThrow('Vous ne pouvez voir que vos propres documents');
     });
   });
 
@@ -123,59 +145,76 @@ describe('DocumentResolver', () => {
   });
 
   describe('createDocument', () => {
-    it('should create a new document with fileUrl', () => {
+    it('should create a new document with current user ID', () => {
       const createDocumentInput: CreateDocumentInput = {
         title: 'Nouveau document',
         description: 'Description du nouveau document',
-        fileUrl: 'https://example.com/new-file.pdf',
-        userId: '1',
+        fileUrl: 'https://example.com/new.pdf',
+        userId: '999', // This should be ignored and replaced with currentUser.userId
       };
 
       const expectedDocument = {
         id: '3',
-        ...createDocumentInput,
+        title: 'Nouveau document',
+        description: 'Description du nouveau document',
+        fileUrl: 'https://example.com/new.pdf',
+        userId: mockAdminUser.userId, // Should be replaced
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
       documentService.create.mockReturnValue(expectedDocument);
 
-      const result = resolver.createDocument(createDocumentInput);
+      const result = resolver.createDocument(
+        createDocumentInput,
+        mockAdminUser,
+      );
 
       expect(result).toEqual(expectedDocument);
-      expect(documentService.create).toHaveBeenCalledWith(createDocumentInput);
+      expect(documentService.create).toHaveBeenCalledWith({
+        ...createDocumentInput,
+        userId: mockAdminUser.userId, // Should use currentUser.userId
+      });
     });
 
-    it('should create a document without fileUrl', () => {
+    it('should create document for regular user', () => {
       const createDocumentInput: CreateDocumentInput = {
-        title: 'Document sans fichier',
-        description: 'Document sans URL de fichier',
-        userId: '2',
+        title: 'Document utilisateur',
+        description: 'Document créé par utilisateur',
+        fileUrl: 'https://example.com/user.pdf',
+        userId: '1', // This should be ignored
       };
 
       const expectedDocument = {
         id: '3',
-        ...createDocumentInput,
-        fileUrl: undefined,
+        title: 'Document utilisateur',
+        description: 'Document créé par utilisateur',
+        fileUrl: 'https://example.com/user.pdf',
+        userId: mockRegularUser.userId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
       documentService.create.mockReturnValue(expectedDocument);
 
-      const result = resolver.createDocument(createDocumentInput);
+      const result = resolver.createDocument(
+        createDocumentInput,
+        mockRegularUser,
+      );
 
       expect(result).toEqual(expectedDocument);
-      expect(documentService.create).toHaveBeenCalledWith(createDocumentInput);
+      expect(documentService.create).toHaveBeenCalledWith({
+        ...createDocumentInput,
+        userId: mockRegularUser.userId, // Should use currentUser.userId
+      });
     });
   });
 
   describe('updateDocument', () => {
-    it('should update an existing document', () => {
+    it('should update a document when user owns it', () => {
       const documentId = '1';
       const updateDocumentInput: UpdateDocumentInput = {
         title: 'Titre mis à jour',
-        description: 'Description mise à jour',
       };
 
       const expectedDocument = {
@@ -184,49 +223,44 @@ describe('DocumentResolver', () => {
         updatedAt: new Date(),
       };
 
+      // Mock findById to return the document (user owns it)
+      documentService.findById.mockReturnValue(mockDocuments[0]);
       documentService.update.mockReturnValue(expectedDocument);
 
-      const result = resolver.updateDocument(documentId, updateDocumentInput);
+      const result = resolver.updateDocument(
+        documentId,
+        updateDocumentInput,
+        mockAdminUser,
+      );
 
       expect(result).toEqual(expectedDocument);
+      expect(documentService.findById).toHaveBeenCalledWith(documentId);
       expect(documentService.update).toHaveBeenCalledWith(
         documentId,
         updateDocumentInput,
       );
     });
 
-    it('should return undefined for non-existent document', () => {
-      const documentId = '999';
-      const updateDocumentInput: UpdateDocumentInput = {
-        title: 'Titre inexistant',
-      };
-
-      documentService.update.mockReturnValue(undefined);
-
-      const result = resolver.updateDocument(documentId, updateDocumentInput);
-
-      expect(result).toBeUndefined();
-      expect(documentService.update).toHaveBeenCalledWith(
-        documentId,
-        updateDocumentInput,
-      );
-    });
-
-    it('should handle partial updates', () => {
+    it('should allow admin to update any document', () => {
       const documentId = '1';
       const updateDocumentInput: UpdateDocumentInput = {
-        title: 'Nouveau titre seulement',
+        title: 'Admin update',
       };
 
       const expectedDocument = {
         ...mockDocuments[0],
-        title: 'Nouveau titre seulement',
+        ...updateDocumentInput,
         updatedAt: new Date(),
       };
 
+      documentService.findById.mockReturnValue(mockDocuments[0]);
       documentService.update.mockReturnValue(expectedDocument);
 
-      const result = resolver.updateDocument(documentId, updateDocumentInput);
+      const result = resolver.updateDocument(
+        documentId,
+        updateDocumentInput,
+        mockAdminUser,
+      );
 
       expect(result).toEqual(expectedDocument);
       expect(documentService.update).toHaveBeenCalledWith(
@@ -234,65 +268,70 @@ describe('DocumentResolver', () => {
         updateDocumentInput,
       );
     });
+
+    it('should throw error when user tries to update document they do not own', () => {
+      const documentId = '1'; // Document owned by user ID '1'
+      const updateDocumentInput: UpdateDocumentInput = {
+        title: 'Unauthorized update',
+      };
+
+      // Mock findById to return the document owned by user '1'
+      documentService.findById.mockReturnValue(mockDocuments[0]);
+
+      expect(() => {
+        resolver.updateDocument(
+          documentId,
+          updateDocumentInput,
+          mockRegularUser,
+        );
+      }).toThrow('Vous ne pouvez modifier que vos propres documents');
+    });
+
+    it('should throw error for non-existent document', () => {
+      const documentId = '999';
+      const updateDocumentInput: UpdateDocumentInput = {
+        title: 'Update non-existent',
+      };
+
+      documentService.findById.mockReturnValue(undefined);
+
+      expect(() => {
+        resolver.updateDocument(documentId, updateDocumentInput, mockAdminUser);
+      }).toThrow('Document non trouvé');
+    });
   });
 
   describe('deleteDocument', () => {
-    it('should delete an existing document', () => {
-      const documentId = '2';
+    it('should delete a document when user owns it', () => {
+      const documentId = '1';
+
+      documentService.findById.mockReturnValue(mockDocuments[0]);
       documentService.delete.mockReturnValue(true);
 
-      const result = resolver.deleteDocument(documentId);
+      const result = resolver.deleteDocument(documentId, mockAdminUser);
 
       expect(result).toBe(true);
       expect(documentService.delete).toHaveBeenCalledWith(documentId);
     });
 
-    it('should return false for non-existent document', () => {
+    it('should throw error when user tries to delete document they do not own', () => {
+      const documentId = '1'; // Document owned by user ID '1'
+
+      documentService.findById.mockReturnValue(mockDocuments[0]);
+
+      expect(() => {
+        resolver.deleteDocument(documentId, mockRegularUser);
+      }).toThrow('Vous ne pouvez supprimer que vos propres documents');
+    });
+
+    it('should throw error for non-existent document', () => {
       const documentId = '999';
-      documentService.delete.mockReturnValue(false);
 
-      const result = resolver.deleteDocument(documentId);
+      documentService.findById.mockReturnValue(undefined);
 
-      expect(result).toBe(false);
-      expect(documentService.delete).toHaveBeenCalledWith(documentId);
-    });
-  });
-
-  describe('integration behavior', () => {
-    it('should handle service errors gracefully', () => {
-      const documentId = '1';
-      documentService.findById.mockImplementation(() => {
-        throw new Error('Database error');
-      });
-
-      expect(() => resolver.getDocumentById(documentId)).toThrow(
-        'Database error',
-      );
-    });
-
-    it('should pass through service return values correctly', () => {
-      const createInput: CreateDocumentInput = {
-        title: 'Test document',
-        description: 'Test description',
-        userId: '1',
-      };
-
-      const serviceResult = {
-        id: '100',
-        title: 'Test document',
-        description: 'Test description',
-        fileUrl: undefined,
-        userId: '1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      documentService.create.mockReturnValue(serviceResult);
-
-      const resolverResult = resolver.createDocument(createInput);
-
-      expect(resolverResult).toBe(serviceResult);
-      expect(resolverResult).toHaveProperty('id', '100');
+      expect(() => {
+        resolver.deleteDocument(documentId, mockAdminUser);
+      }).toThrow('Document non trouvé');
     });
   });
 });

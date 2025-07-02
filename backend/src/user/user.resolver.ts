@@ -1,14 +1,22 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import { User } from './user.model';
 import { UserService } from './user.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserRole } from '../common/enums/user-role.enum';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query(() => [User], { name: 'users' })
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   findAll(): User[] {
     return this.userService.findAll();
   }
@@ -19,19 +27,30 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput): User {
     return this.userService.create(createUserInput);
   }
 
   @Mutation(() => User, { nullable: true })
+  @UseGuards(GqlAuthGuard)
   updateUser(
     @Args('id') id: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @CurrentUser()
+    currentUser: { userId: string; email: string; role: UserRole },
   ): User | undefined {
+    // Un utilisateur ne peut modifier que son propre profil, sauf s'il est admin
+    if (currentUser.role !== UserRole.ADMIN && currentUser.userId !== id) {
+      throw new Error('Vous ne pouvez modifier que votre propre profil');
+    }
     return this.userService.update(id, updateUserInput);
   }
 
   @Mutation(() => Boolean)
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   deleteUser(@Args('id') id: string): boolean {
     return this.userService.delete(id);
   }
