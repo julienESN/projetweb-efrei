@@ -400,7 +400,7 @@ Tests:       14 passed, 14 total
 
 **✅ Si tous les tests passent, les étapes 2, 3 et 4 sont entièrement validées !**
 
-### 5. Développement des APIs  ✅ **COMPLÉTÉ**
+### 5. Développement des APIs ✅ **COMPLÉTÉ**
 
 - Résolveurs :
   - `getDocumentsByUser()` - Implémenté et testé
@@ -413,7 +413,7 @@ Tests:       14 passed, 14 total
 
 **Toutes les APIs sont fonctionnelles et testées automatiquement via les tests e2e.**
 
-### 6. Intégration du Message Queuing  ✅ **COMPLÉTÉ**
+### 6. Intégration du Message Queuing ✅ **COMPLÉTÉ**
 
 - Lors de la création ou suppression d'un document :
   - Envoyer un événement dans une queue
@@ -604,6 +604,88 @@ redis> llen bull:document-events:completed
 - La tester localement
 - Modifier l'action GitHub pour builder l'image
   - [GitHub Actions](https://github.com/features/actions)
+
+## 🐳 Scripts Docker intégrés
+
+### Backend - Scripts avec docker-compose.test.yml
+
+Le backend utilise le fichier `docker-compose.test.yml` avec Redis intégré.
+
+```bash
+# Depuis le dossier backend/
+cd backend
+
+# Construire les images Docker
+npm run docker:build
+
+# Démarrer l'application (build + up automatique)
+npm run docker:start
+
+# Arrêter l'application
+npm run docker:stop
+
+# Voir les logs en temps réel
+npm run docker:logs
+
+# Redémarrer les services
+npm run docker:restart
+
+# Voir le statut des containers
+npm run docker:ps
+```
+
+**Services inclus :**
+
+- Backend NestJS (port 3000)
+- Redis (port 6379)
+- Healthchecks automatiques
+
+### Frontend - Scripts avec docker-compose.yml
+
+Le frontend a son propre docker-compose dédié.
+
+```bash
+# Depuis le dossier frontend/
+cd frontend
+
+# Construire l'image Docker
+npm run docker:build
+
+# Démarrer l'application (build + up automatique)
+npm run start
+
+# Arrêter l'application
+npm run stop
+
+# Voir les logs en temps réel
+npm run docker:logs
+
+# Redémarrer le service
+npm run docker:restart
+
+# Voir le statut du container
+npm run docker:ps
+```
+
+**Service inclus :**
+
+- Frontend React (port 5173)
+- Healthcheck avec wget
+
+### Utilisation rapide
+
+```bash
+# Démarrer le backend complet (avec Redis)
+cd backend && npm run docker:start
+
+# Démarrer le frontend
+cd frontend && npm start
+
+# Applications accessibles sur :
+# Frontend: http://localhost:5173
+# Backend: http://localhost:3000
+# GraphQL Playground: http://localhost:3000/graphql
+```
 
 #### 🐳 **Création et test de l'image Docker**
 

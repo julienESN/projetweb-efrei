@@ -19,7 +19,15 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:auth": "jest --testPathPattern=auth.integration.spec.ts",
-    "test:auth:manual": "node src/auth/test-auth.script.js"
+    "test:auth:manual": "node src/auth/test-auth.script.js",
+    "docker:build": "docker-compose -f docker-compose.test.yml build",
+    "docker:up": "docker-compose -f docker-compose.test.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.test.yml down",
+    "docker:restart": "docker-compose -f docker-compose.test.yml restart",
+    "docker:logs": "docker-compose -f docker-compose.test.yml logs -f",
+    "docker:ps": "docker-compose -f docker-compose.test.yml ps",
+    "docker:start": "npm run docker:build && npm run docker:up",
+    "docker:stop": "npm run docker:down"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
