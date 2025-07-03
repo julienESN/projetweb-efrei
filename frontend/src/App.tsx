@@ -8,6 +8,9 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDocuments from "./pages/AdminDocuments";
+import AdminUsers from "./pages/AdminUsers";
+import AdminRoute from "./components/AdminRoute";
 
 function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -46,6 +49,24 @@ function App() {
               element={<ProtectedRoute>{element}</ProtectedRoute>}
             />
           ))}
+
+        {/* Routes admin protégées */}
+        <Route
+          path="/admin/documents"
+          element={
+            <AdminRoute>
+              <AdminDocuments />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminUsers />
+            </AdminRoute>
+          }
+        />
 
       </Routes>
       </Layout>
