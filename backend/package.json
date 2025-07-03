@@ -19,7 +19,21 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:auth": "jest --testPathPattern=auth.integration.spec.ts",
-    "test:auth:manual": "node src/auth/test-auth.script.js"
+    "test:auth:manual": "node src/auth/test-auth.script.js",
+    "docker:build": "docker-compose -f docker-compose.test.yml build",
+    "docker:up": "docker-compose -f docker-compose.test.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.test.yml down",
+    "docker:restart": "docker-compose -f docker-compose.test.yml restart",
+    "docker:logs": "docker-compose -f docker-compose.test.yml logs -f",
+    "docker:ps": "docker-compose -f docker-compose.test.yml ps",
+    "docker:start": "npm run docker:build && npm run docker:up",
+    "docker:stop": "npm run docker:down",
+    "prisma:generate": "prisma generate",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "prisma:reset": "prisma migrate reset",
+    "db:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
@@ -31,6 +45,7 @@
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@prisma/client": "^6.11.0",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.54.3",
@@ -39,6 +54,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "prisma": "^6.11.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

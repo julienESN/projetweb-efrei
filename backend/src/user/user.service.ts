@@ -1,94 +1,161 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { User } from './user.model';
 import { UserEntity } from './user.entity';
 import { UserRole } from '../common/enums/user-role.enum';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
+import { PrismaService } from '../prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import {
+  prismaUserRoleToGraphQL,
+  graphQLUserRoleToPrisma,
+} from '../common/utils/prisma-converters';
 
 @Injectable()
-export class UserService {
-  constructor(@InjectQueue('user-events') private userEventsQueue: Queue) {}
+export class UserService implements OnModuleInit {
+  constructor(
+    private prisma: PrismaService,
+    @InjectQueue('user-events') private userEventsQueue: Queue,
+  ) {}
 
-  private users: UserEntity[] = [
-    {
-      id: '1',
-      email: 'admin@example.com',
-      username: 'admin',
-      password: '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-      role: UserRole.ADMIN,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: '2',
-      email: 'user@example.com',
-      username: 'user',
-      password: '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-      role: UserRole.USER,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ];
+  async onModuleInit() {
+    // Créer des utilisateurs par défaut s'ils n'existent pas
+    await this.createDefaultUsers();
+  }
 
-  findAll(): User[] {
-    // Convertir UserEntity vers User (sans password)
-    return this.users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+  private async createDefaultUsers() {
+    try {
+      // Vérifier si les utilisateurs par défaut existent déjà
+      const adminExists = await this.prisma.user.findUnique({
+        where: { email: 'admin@example.com' },
+      });
+
+      const userExists = await this.prisma.user.findUnique({
+        where: { email: 'user@example.com' },
+      });
+
+      // Créer l'admin par défaut
+      if (!adminExists) {
+        const hashedPassword = await bcrypt.hash('password', 10);
+        await this.prisma.user.create({
+          data: {
+            email: 'admin@example.com',
+            username: 'admin',
+            password: hashedPassword,
+            role: 'ADMIN',
+          },
+        });
+      }
+
+      // Créer l'utilisateur par défaut
+      if (!userExists) {
+        const hashedPassword = await bcrypt.hash('password', 10);
+        await this.prisma.user.create({
+          data: {
+            email: 'user@example.com',
+            username: 'user',
+            password: hashedPassword,
+            role: 'USER',
+          },
+        });
+      }
+    } catch (error) {
+      // En cas d'erreur de DB, on continue sans créer les utilisateurs par défaut
+      console.warn('Impossible de créer les utilisateurs par défaut:', error.message);
+    }
+  }
+
+  async findAll(): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    
+    return users.map(user => ({
+      ...user,
+      role: prismaUserRoleToGraphQL(user.role),
     }));
   }
 
-  findById(id: string): User | undefined {
-    const user = this.users.find((user) => user.id === id);
-    if (!user) return undefined;
-
-    // Convertir UserEntity vers User (sans password)
+  async findById(id: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    
+    if (!user) return null;
+    
     return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      ...user,
+      role: prismaUserRoleToGraphQL(user.role),
     };
   }
 
-  findByEmail(email: string): User | undefined {
-    const user = this.users.find((user) => user.email === email);
-    if (!user) return undefined;
-
-    // Convertir UserEntity vers User (sans password)
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    
+    if (!user) return null;
+    
     return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      ...user,
+      role: prismaUserRoleToGraphQL(user.role),
     };
   }
 
-  // Nouvelle méthode pour l'authentification (inclut le password)
-  findByEmailWithPassword(email: string): UserEntity | undefined {
-    return this.users.find((user) => user.email === email);
+  // Méthode pour l'authentification (inclut le password)
+  async findByEmailWithPassword(email: string): Promise<UserEntity | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+    
+    if (!user) return null;
+    
+    return {
+      ...user,
+      role: prismaUserRoleToGraphQL(user.role),
+    };
   }
 
-  create(userData: Partial<User>): User {
-    const newUser: UserEntity = {
-      id: (this.users.length + 1).toString(),
-      email: userData.email!,
-      username: userData.username!,
-      password: '', // Pas de password dans cette méthode
-      role: userData.role || UserRole.USER,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    this.users.push(newUser);
+  async create(userData: Partial<User>): Promise<User> {
+    const newUser = await this.prisma.user.create({
+      data: {
+        email: userData.email!,
+        username: userData.username!,
+        password: '', // Pas de password dans cette méthode
+        role: userData.role ? graphQLUserRoleToPrisma(userData.role) : 'USER',
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
     void this.userEventsQueue.add('user-event', {
       action: 'create',
@@ -96,35 +163,27 @@ export class UserService {
       timestamp: new Date(),
     });
 
-    // Retourner User (sans password)
     return {
-      id: newUser.id,
-      email: newUser.email,
-      username: newUser.username,
-      role: newUser.role,
-      createdAt: newUser.createdAt,
-      updatedAt: newUser.updatedAt,
+      ...newUser,
+      role: prismaUserRoleToGraphQL(newUser.role),
     };
   }
 
-  // Nouvelle méthode pour créer avec password
-  createWithPassword(userData: {
+  // Méthode pour créer avec password
+  async createWithPassword(userData: {
     email: string;
     username: string;
     password: string;
     role: UserRole;
-  }): UserEntity {
-    const newUser: UserEntity = {
-      id: (this.users.length + 1).toString(),
-      email: userData.email,
-      username: userData.username,
-      password: userData.password,
-      role: userData.role,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    this.users.push(newUser);
+  }): Promise<UserEntity> {
+    const newUser = await this.prisma.user.create({
+      data: {
+        email: userData.email,
+        username: userData.username,
+        password: userData.password,
+        role: graphQLUserRoleToPrisma(userData.role),
+      },
+    });
 
     void this.userEventsQueue.add('user-event', {
       action: 'create',
@@ -132,43 +191,55 @@ export class UserService {
       timestamp: new Date(),
     });
 
-    return newUser;
-  }
-
-  update(id: string, userData: Partial<User>): User | undefined {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) return undefined;
-
-    this.users[userIndex] = {
-      ...this.users[userIndex],
-      ...userData,
-      updatedAt: new Date(),
-    };
-
-    // Retourner User (sans password)
-    const updatedUser = this.users[userIndex];
     return {
-      id: updatedUser.id,
-      email: updatedUser.email,
-      username: updatedUser.username,
-      role: updatedUser.role,
-      createdAt: updatedUser.createdAt,
-      updatedAt: updatedUser.updatedAt,
+      ...newUser,
+      role: prismaUserRoleToGraphQL(newUser.role),
     };
   }
 
-  delete(id: string): boolean {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) return false;
+  async update(id: string, userData: Partial<User>): Promise<User | null> {
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: { id },
+        data: {
+          email: userData.email,
+          username: userData.username,
+          role: userData.role ? graphQLUserRoleToPrisma(userData.role) : undefined,
+        },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+      
+      return {
+        ...updatedUser,
+        role: prismaUserRoleToGraphQL(updatedUser.role),
+      };
+    } catch (error) {
+      return null;
+    }
+  }
 
-    this.users.splice(userIndex, 1);
+  async delete(id: string): Promise<boolean> {
+    try {
+      await this.prisma.user.delete({
+        where: { id },
+      });
 
-    void this.userEventsQueue.add('user-event', {
-      action: 'delete',
-      userId: id,
-      timestamp: new Date(),
-    });
+      void this.userEventsQueue.add('user-event', {
+        action: 'delete',
+        userId: id,
+        timestamp: new Date(),
+      });
 
-    return true;
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }

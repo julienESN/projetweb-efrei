@@ -11,8 +11,8 @@ export class Document {
   @Field()
   description: string;
 
-  @Field({ nullable: true })
-  fileUrl?: string;
+  @Field(() => String, { nullable: true })
+  fileUrl?: string | null;
 
   @Field()
   userId: string; // ID de l'utilisateur propriétaire

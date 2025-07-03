@@ -4,6 +4,7 @@ import { DELETE_DOCUMENT } from '../graphql/mutation';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
+
 export default function Documents() {
   const token = localStorage.getItem('token');
   let userId = '';

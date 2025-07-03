@@ -11,6 +11,7 @@ services:
       - NODE_ENV=production
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://projette_efrei_db_user:InQg1oKy2hiRDFfsteIwBiYthMhzTLj0@dpg-d1j46l15pdvs73cpnqt0-a.frankfurt-postgres.render.com/projette_efrei_db
       # Alternative: utiliser REDIS_URL au lieu de REDIS_HOST/PORT
       # - REDIS_URL=redis://redis:6379
     depends_on:

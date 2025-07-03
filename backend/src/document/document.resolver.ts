@@ -17,17 +17,17 @@ export class DocumentResolver {
   @Query(() => [Document], { name: 'documents' })
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  findAll(): Document[] {
+  async findAll(): Promise<Document[]> {
     return this.documentService.findAll();
   }
 
   @Query(() => [Document], { name: 'getDocumentsByUser' })
   @UseGuards(GqlAuthGuard)
-  getDocumentsByUser(
+  async getDocumentsByUser(
     @Args('userId') userId: string,
     @CurrentUser()
     currentUser: { userId: string; email: string; role: UserRole },
-  ): Document[] {
+  ): Promise<Document[]> {
     // Un utilisateur ne peut voir que ses propres documents, sauf s'il est admin
     if (currentUser.role !== UserRole.ADMIN && currentUser.userId !== userId) {
       throw new Error('Vous ne pouvez voir que vos propres documents');
@@ -36,18 +36,17 @@ export class DocumentResolver {
   }
 
   @Query(() => Document, { name: 'getDocumentById', nullable: true })
-  @UseGuards(GqlAuthGuard)
-  getDocumentById(@Args('id') id: string): Document | undefined {
+  async getDocumentById(@Args('id') id: string): Promise<Document | null> {
     return this.documentService.findById(id);
   }
 
   @Mutation(() => Document)
   @UseGuards(GqlAuthGuard)
-  createDocument(
+  async createDocument(
     @Args('createDocumentInput') createDocumentInput: CreateDocumentInput,
     @CurrentUser()
     currentUser: { userId: string; email: string; role: UserRole },
-  ): Document {
+  ): Promise<Document> {
     // Ajouter l'ID de l'utilisateur actuel au document
     const documentWithUser = {
       ...createDocumentInput,
@@ -58,14 +57,14 @@ export class DocumentResolver {
 
   @Mutation(() => Document, { nullable: true })
   @UseGuards(GqlAuthGuard)
-  updateDocument(
+  async updateDocument(
     @Args('id') id: string,
     @Args('updateDocumentInput') updateDocumentInput: UpdateDocumentInput,
     @CurrentUser()
     currentUser: { userId: string; email: string; role: UserRole },
-  ): Document | undefined {
+  ): Promise<Document | null> {
     // Vérifier que l'utilisateur peut modifier ce document
-    const document = this.documentService.findById(id);
+    const document = await this.documentService.findById(id);
     if (!document) {
       throw new Error('Document non trouvé');
     }
@@ -82,13 +81,13 @@ export class DocumentResolver {
 
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard)
-  deleteDocument(
+  async deleteDocument(
     @Args('id') id: string,
     @CurrentUser()
     currentUser: { userId: string; email: string; role: UserRole },
-  ): boolean {
+  ): Promise<boolean> {
     // Vérifier que l'utilisateur peut supprimer ce document
-    const document = this.documentService.findById(id);
+    const document = await this.documentService.findById(id);
     if (!document) {
       throw new Error('Document non trouvé');
     }

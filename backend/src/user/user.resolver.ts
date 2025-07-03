@@ -17,30 +17,30 @@ export class UserResolver {
   @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  findAll(): User[] {
+  async findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
 
   @Query(() => User, { name: 'user', nullable: true })
-  findOne(@Args('id') id: string): User | undefined {
+  async findOne(@Args('id') id: string): Promise<User | null> {
     return this.userService.findById(id);
   }
 
   @Mutation(() => User)
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput): User {
+  async createUser(@Args('createUserInput') createUserInput: CreateUserInput): Promise<User> {
     return this.userService.create(createUserInput);
   }
 
   @Mutation(() => User, { nullable: true })
   @UseGuards(GqlAuthGuard)
-  updateUser(
+  async updateUser(
     @Args('id') id: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
     @CurrentUser()
     currentUser: { userId: string; email: string; role: UserRole },
-  ): User | undefined {
+  ): Promise<User | null> {
     // Un utilisateur ne peut modifier que son propre profil, sauf s'il est admin
     if (currentUser.role !== UserRole.ADMIN && currentUser.userId !== id) {
       throw new Error('Vous ne pouvez modifier que votre propre profil');
@@ -51,7 +51,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  deleteUser(@Args('id') id: string): boolean {
+  async deleteUser(@Args('id') id: string): Promise<boolean> {
     return this.userService.delete(id);
   }
 }
