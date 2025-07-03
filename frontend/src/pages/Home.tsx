@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { BsFileEarmarkText, BsPlusCircle } from 'react-icons/bs';
 
 export default function Home() {
   const [isLogged, setIsLogged] = useState(false);
@@ -21,30 +22,34 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="bg-white p-10 rounded shadow-md w-full max-w-lg text-center">
-        <h1 className="text-3xl font-bold mb-4">Bienvenue sur <span className="text-blue-600">Secure Docs</span></h1>
-        <p className="text-lg mb-8 text-gray-700">
-          La plateforme sécurisée pour gérer, créer et organiser vos documents en toute simplicité.
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 px-4 text-white">
+      <div className="max-w-2xl text-center">
+        <BsFileEarmarkText size={80} className="mx-auto mb-6 drop-shadow-lg" />
+        <h1 className="text-5xl font-extrabold mb-4 tracking-tight">
+          Secure <span className="text-yellow-300">Docs</span>
+        </h1>
+        <p className="text-xl md:text-2xl mb-8 opacity-90">
+          Gérez et organisez vos documents en toute sécurité, simplement.
         </p>
+
         {isLogged ? (
           <button
             onClick={() => navigate('/documents')}
-            className="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition"
+            className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition shadow-lg"
           >
-            Accéder à mes documents
+            <BsPlusCircle size={22} /> Commencer
           </button>
         ) : (
-          <div className="flex flex-col gap-3 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate('/login')}
-              className="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition w-full"
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition shadow"
             >
               Se connecter
             </button>
             <button
               onClick={() => navigate('/register')}
-              className="bg-gray-200 text-gray-800 px-6 py-2 rounded font-semibold hover:bg-gray-300 transition w-full"
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-white/20 border border-white px-6 py-3 rounded-full font-semibold hover:bg-white/30 transition"
             >
               S'inscrire
             </button>
