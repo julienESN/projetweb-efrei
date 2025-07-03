@@ -78,10 +78,10 @@ describe('UserResolver', () => {
   });
 
   describe('findAll', () => {
-    it('should return all users', () => {
-      userService.findAll.mockReturnValue(mockUsers);
+    it('should return all users', async () => {
+      userService.findAll.mockReturnValue(Promise.resolve(mockUsers));
 
-      const result = resolver.findAll();
+      const result = await resolver.findAll();
 
       expect(result).toEqual(mockUsers);
       expect(userService.findAll).toHaveBeenCalledTimes(1);
@@ -89,29 +89,29 @@ describe('UserResolver', () => {
   });
 
   describe('findOne', () => {
-    it('should return a user by id', () => {
+    it('should return a user by id', async () => {
       const userId = '1';
-      userService.findById.mockReturnValue(mockUsers[0]);
+      userService.findById.mockReturnValue(Promise.resolve(mockUsers[0]));
 
-      const result = resolver.findOne(userId);
+      const result = await resolver.findOne(userId);
 
       expect(result).toEqual(mockUsers[0]);
       expect(userService.findById).toHaveBeenCalledWith(userId);
     });
 
-    it('should return undefined for non-existent user', () => {
+    it('should return undefined for non-existent user', async () => {
       const userId = '999';
-      userService.findById.mockReturnValue(undefined);
+      userService.findById.mockReturnValue(Promise.resolve(null));
 
-      const result = resolver.findOne(userId);
+      const result = await resolver.findOne(userId);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
       expect(userService.findById).toHaveBeenCalledWith(userId);
     });
   });
 
   describe('createUser', () => {
-    it('should create a new user', () => {
+    it('should create a new user', async () => {
       const createUserInput: CreateUserInput = {
         email: 'newuser@example.com',
         username: 'newuser',
@@ -125,9 +125,9 @@ describe('UserResolver', () => {
         updatedAt: new Date(),
       };
 
-      userService.create.mockReturnValue(expectedUser);
+      userService.create.mockReturnValue(Promise.resolve(expectedUser));
 
-      const result = resolver.createUser(createUserInput);
+      const result = await resolver.createUser(createUserInput);
 
       expect(result).toEqual(expectedUser);
       expect(userService.create).toHaveBeenCalledWith(createUserInput);
@@ -135,7 +135,7 @@ describe('UserResolver', () => {
   });
 
   describe('updateUser', () => {
-    it('should update user when requested by admin', () => {
+    it('should update user when requested by admin', async () => {
       const userId = '2';
       const updateUserInput: UpdateUserInput = {
         username: 'updated-username',
@@ -147,9 +147,9 @@ describe('UserResolver', () => {
         updatedAt: new Date(),
       };
 
-      userService.update.mockReturnValue(expectedUser);
+      userService.update.mockReturnValue(Promise.resolve(expectedUser));
 
-      const result = resolver.updateUser(
+      const result = await resolver.updateUser(
         userId,
         updateUserInput,
         mockAdminUser,
@@ -159,7 +159,7 @@ describe('UserResolver', () => {
       expect(userService.update).toHaveBeenCalledWith(userId, updateUserInput);
     });
 
-    it('should allow user to update their own profile', () => {
+    it('should allow user to update their own profile', async () => {
       const userId = '2';
       const updateUserInput: UpdateUserInput = {
         username: 'self-updated',
@@ -171,9 +171,9 @@ describe('UserResolver', () => {
         updatedAt: new Date(),
       };
 
-      userService.update.mockReturnValue(expectedUser);
+      userService.update.mockReturnValue(Promise.resolve(expectedUser));
 
-      const result = resolver.updateUser(
+      const result = await resolver.updateUser(
         userId,
         updateUserInput,
         mockRegularUser,
@@ -183,42 +183,42 @@ describe('UserResolver', () => {
       expect(userService.update).toHaveBeenCalledWith(userId, updateUserInput);
     });
 
-    it('should throw error when user tries to update other user profile', () => {
+    it('should throw error when user tries to update other user profile', async () => {
       const userId = '1'; // Admin's ID
       const updateUserInput: UpdateUserInput = {
         username: 'unauthorized-update',
       };
 
-      expect(() => {
-        resolver.updateUser(userId, updateUserInput, mockRegularUser);
-      }).toThrow('Vous ne pouvez modifier que votre propre profil');
+      await expect(
+        resolver.updateUser(userId, updateUserInput, mockRegularUser)
+      ).rejects.toThrow('Vous ne pouvez modifier que votre propre profil');
     });
 
-    it('should return undefined for non-existent user', () => {
+    it('should return undefined for non-existent user', async () => {
       const userId = '999';
       const updateUserInput: UpdateUserInput = {
         username: 'update-nonexistent',
       };
 
-      userService.update.mockReturnValue(undefined);
+      userService.update.mockReturnValue(Promise.resolve(null));
 
-      const result = resolver.updateUser(
+      const result = await resolver.updateUser(
         userId,
         updateUserInput,
         mockAdminUser,
       );
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
       expect(userService.update).toHaveBeenCalledWith(userId, updateUserInput);
     });
   });
 
   describe('deleteUser', () => {
-    it('should delete a user', () => {
+    it('should delete a user', async () => {
       const userId = '2';
-      userService.delete.mockReturnValue(true);
+      userService.delete.mockReturnValue(Promise.resolve(true));
 
-      const result = resolver.deleteUser(userId);
+      const result = await resolver.deleteUser(userId);
 
       expect(result).toBe(true);
       expect(userService.delete).toHaveBeenCalledWith(userId);

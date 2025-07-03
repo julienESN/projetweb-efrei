@@ -6,9 +6,13 @@ WORKDIR /app
 
 # Copier les fichiers de configuration des dépendances
 COPY package*.json ./
+COPY prisma ./prisma/
 
 # Installer les dépendances (y compris devDependencies pour le build)
 RUN npm ci
+
+# Générer le client Prisma
+RUN npx prisma generate
 
 # Copier le code source
 COPY . .
@@ -31,12 +35,17 @@ WORKDIR /app
 
 # Copier les fichiers de configuration des dépendances
 COPY package*.json ./
+COPY prisma ./prisma/
 
 # Installer uniquement les dépendances de production
 RUN npm ci --only=production && npm cache clean --force
 
+# Générer le client Prisma pour la production
+RUN npx prisma generate
+
 # Copier l'application buildée depuis l'étape builder
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/generated ./generated
 
 # Créer le script de démarrage qui lance Redis + App
 RUN echo '#!/bin/sh' > /app/start.sh && \
@@ -44,6 +53,8 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'redis-server --daemonize yes --appendonly yes --bind 127.0.0.1 --port 6379' >> /app/start.sh && \
     echo 'echo "⏳ Attente de Redis..."' >> /app/start.sh && \
     echo 'sleep 2' >> /app/start.sh && \
+    echo 'echo "🗄️ Déploiement des migrations Prisma..."' >> /app/start.sh && \
+    echo 'npx prisma migrate deploy || echo "⚠️ Échec des migrations, continuons..."' >> /app/start.sh && \
     echo 'echo "🎯 Démarrage de l'\''application NestJS..."' >> /app/start.sh && \
     echo 'node dist/main' >> /app/start.sh && \
     chmod +x /app/start.sh

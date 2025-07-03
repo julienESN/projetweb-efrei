@@ -14,6 +14,7 @@ import { UserModule } from './user/user.module';
 import { DocumentService } from './document/document.service';
 import { DocumentResolver } from './document/document.resolver';
 import { DocumentEventsProcessor } from './document/document-events.processor';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -49,6 +50,10 @@ import { DocumentEventsProcessor } from './document/document-events.processor';
     BullModule.registerQueue({
       name: 'document-events',
     }),
+    BullModule.registerQueue({
+      name: 'user-events',
+    }),
+    PrismaModule,
     AuthModule,
     UserModule,
   ],
