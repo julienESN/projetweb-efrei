@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { REGISTER_MUTATION } from '../graphql/mutation';
+import { toast } from 'react-hot-toast';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -19,7 +20,7 @@ const Register: React.FC = () => {
         },
       });
       if (data?.register?.access_token) {
-        alert('Inscription réussie !');
+        toast.success('Inscription réussie');
         window.location.href = '/login';
       }
     } catch (err) {
@@ -27,11 +28,17 @@ const Register: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (error) {
+      toast.error("Erreur d'inscription");
+    }
+  }, [error]);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md w-full max-w-sm"
+        className="bg-white/10 backdrop-blur-sm p-8 rounded-xl shadow-xl w-full max-w-sm"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Inscription</h2>
         <input
@@ -66,9 +73,7 @@ const Register: React.FC = () => {
         >
           {loading ? 'Inscription...' : "S'inscrire"}
         </button>
-        {error && (
-          <div className="text-red-500 mt-4 text-center">{error.message}</div>
-        )}
+        {/* erreurs via toast */}
       </form>
       <div className="mt-4 text-center">
         <span>Déjà un compte ? </span>

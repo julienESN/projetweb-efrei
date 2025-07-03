@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { LOGIN_MUTATION } from '../graphql/mutation';
+import { toast } from 'react-hot-toast';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +19,7 @@ const Login: React.FC = () => {
       });
       if (data?.login?.access_token) {
         localStorage.setItem('token', data.login.access_token);
-        alert('Connexion réussie !');
+        toast.success('Connexion réussie');
         window.location.href = '/'; // Redirection après login
       }
     } catch (err) {
@@ -26,11 +27,17 @@ const Login: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (error) {
+      toast.error('Erreur de connexion');
+    }
+  }, [error]);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md w-full max-w-sm"
+        className="bg-white/10 backdrop-blur-sm p-8 rounded-xl shadow-xl w-full max-w-sm"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Connexion</h2>
         <input
@@ -56,9 +63,7 @@ const Login: React.FC = () => {
         >
           {loading ? 'Connexion...' : 'Se connecter'}
         </button>
-        {error && (
-          <div className="text-red-500 mt-4 text-center">{error.message}</div>
-        )}
+        {/* Erreurs gérées par toast */}
       </form>
       <div className="mt-4 text-center">
         <span>Pas encore de compte ? </span>
