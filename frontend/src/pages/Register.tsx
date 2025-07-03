@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useMutation } from "@apollo/client";
-import { REGISTER_MUTATION } from "../graphql/mutation";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useMutation } from '@apollo/client';
+import { REGISTER_MUTATION } from '../graphql/mutation';
 
 const Register: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("USER");
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const role = 'USER';
   const [register, { loading, error }] = useMutation(REGISTER_MUTATION);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,10 +19,12 @@ const Register: React.FC = () => {
         },
       });
       if (data?.register?.access_token) {
-        alert("Inscription réussie !");
-        window.location.href = "/login";
+        alert('Inscription réussie !');
+        window.location.href = '/login';
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -56,25 +58,24 @@ const Register: React.FC = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-    
+
         <button
           type="submit"
           className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
           disabled={loading}
         >
-          {loading ? "Inscription..." : "S'inscrire"}
+          {loading ? 'Inscription...' : "S'inscrire"}
         </button>
         {error && (
-          <div className="text-red-500 mt-4 text-center">
-            {error.message}
-          </div>
+          <div className="text-red-500 mt-4 text-center">{error.message}</div>
         )}
       </form>
       <div className="mt-4 text-center">
         <span>Déjà un compte ? </span>
-        <Link to="/login" className="text-blue-600 hover:underline">Se connecter</Link>
+        <Link to="/login" className="text-blue-600 hover:underline">
+          Se connecter
+        </Link>
       </div>
-
     </div>
   );
 };

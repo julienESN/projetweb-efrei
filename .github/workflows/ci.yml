@@ -31,21 +31,27 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: 'backend/package-lock.json'
 
       - name: Installation des dépendances
         run: npm ci
+        working-directory: ./backend
 
       - name: Linter (ESLint)
         run: npm run lint
+        working-directory: ./backend
 
       - name: Tests unitaires
         run: npm run test
+        working-directory: ./backend
 
       - name: Tests e2e
         run: npm run test:e2e
+        working-directory: ./backend
 
       - name: Build de l'application
         run: npm run build
+        working-directory: ./backend
 
   # Job 2: Build et Push de l'image Docker
   docker-build:
@@ -79,7 +85,7 @@ jobs:
       - name: Build et Push de l'image Docker
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./backend
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
