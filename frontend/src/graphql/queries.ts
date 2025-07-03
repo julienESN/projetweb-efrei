@@ -46,3 +46,15 @@ export const GET_DOCUMENT = gql`
     }
   }
 `;
+
+export const GET_DOCUMENTS_BY_USER = gql`
+  query($userId: String!) {
+    getDocumentsByUser(userId: $userId) {
+      id
+      title
+      description
+      fileUrl
+      userId
+    }
+  }
+`;
