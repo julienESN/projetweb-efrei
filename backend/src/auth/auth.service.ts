@@ -53,7 +53,9 @@ export class AuthService {
 
   async register(registerInput: RegisterInput): Promise<AuthResponse> {
     // Vérifier si l'email existe déjà
-    const existingUser = await this.userService.findByEmail(registerInput.email);
+    const existingUser = await this.userService.findByEmail(
+      registerInput.email,
+    );
     if (existingUser) {
       throw new UnauthorizedException('Cet email est déjà utilisé');
     }

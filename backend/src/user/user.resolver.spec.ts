@@ -190,7 +190,7 @@ describe('UserResolver', () => {
       };
 
       await expect(
-        resolver.updateUser(userId, updateUserInput, mockRegularUser)
+        resolver.updateUser(userId, updateUserInput, mockRegularUser),
       ).rejects.toThrow('Vous ne pouvez modifier que votre propre profil');
     });
 

@@ -29,7 +29,9 @@ export class UserResolver {
   @Mutation(() => User)
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async createUser(@Args('createUserInput') createUserInput: CreateUserInput): Promise<User> {
+  async createUser(
+    @Args('createUserInput') createUserInput: CreateUserInput,
+  ): Promise<User> {
     return this.userService.create(createUserInput);
   }
 

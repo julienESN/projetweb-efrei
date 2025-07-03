@@ -1,19 +1,34 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { TestAppModule } from './test-app.module';
+import { TestDatabaseService } from './test-database.service';
 
 describe('GraphQL (e2e)', () => {
   let app: INestApplication;
+  let testDbService: TestDatabaseService;
   let adminToken: string;
+  let adminUserId: string;
+  let regularUserId: string;
+  let doc1Id: string;
+  let doc2Id: string;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [TestAppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    testDbService = moduleFixture.get<TestDatabaseService>(TestDatabaseService);
+
     await app.init();
+
+    // Nettoyer et réinitialiser la base de données
+    const { adminUser, regularUser } = await testDbService.resetDatabase();
+    adminUserId = adminUser.id;
+    regularUserId = regularUser.id;
+    doc1Id = 'test-doc-1-id';
+    doc2Id = 'test-doc-2-id';
 
     // Obtenir un token admin pour les tests d'authentification
     const loginResponse = await request(app.getHttpServer())
@@ -78,10 +93,23 @@ describe('GraphQL (e2e)', () => {
         .expect(200)
         .expect((res) => {
           expect(res.body.data.users).toHaveLength(2);
-          expect(res.body.data.users[0].email).toBe('admin@example.com');
-          expect(res.body.data.users[0].role).toBe('ADMIN');
-          expect(res.body.data.users[1].email).toBe('user@example.com');
-          expect(res.body.data.users[1].role).toBe('USER');
+          const users: any[] = res.body.data.users;
+
+          // Vérifier que admin et user sont présents
+          const adminUser = users.find(
+            (u: any) => u.email === 'admin@example.com',
+          );
+          const regularUser = users.find(
+            (u: any) => u.email === 'user@example.com',
+          );
+
+          expect(adminUser).toBeDefined();
+          expect(adminUser.role).toBe('ADMIN');
+          expect(adminUser.username).toBe('admin');
+
+          expect(regularUser).toBeDefined();
+          expect(regularUser.role).toBe('USER');
+          expect(regularUser.username).toBe('user');
         });
     });
 
@@ -90,8 +118,8 @@ describe('GraphQL (e2e)', () => {
         .post('/graphql')
         .send({
           query: `
-            query {
-              user(id: "1") {
+            query($id: String!) {
+              user(id: $id) {
                 id
                 email
                 username
@@ -99,27 +127,25 @@ describe('GraphQL (e2e)', () => {
               }
             }
           `,
+          variables: { id: adminUserId },
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.user.id).toBe('1');
+          expect(res.body.data.user.id).toBe(adminUserId);
           expect(res.body.data.user.email).toBe('admin@example.com');
           expect(res.body.data.user.role).toBe('ADMIN');
         });
     });
 
     it('should create a new user', () => {
+      const timestamp = Date.now();
       return request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
-            mutation {
-              createUser(createUserInput: {
-                email: "test@example.com"
-                username: "testuser"
-                role: USER
-              }) {
+            mutation($createUserInput: CreateUserInput!) {
+              createUser(createUserInput: $createUserInput) {
                 id
                 email
                 username
@@ -127,11 +153,22 @@ describe('GraphQL (e2e)', () => {
               }
             }
           `,
+          variables: {
+            createUserInput: {
+              email: `test-${timestamp}@example.com`,
+              username: `testuser-${timestamp}`,
+              role: 'USER',
+            },
+          },
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.createUser.email).toBe('test@example.com');
-          expect(res.body.data.createUser.username).toBe('testuser');
+          expect(res.body.data.createUser.email).toBe(
+            `test-${timestamp}@example.com`,
+          );
+          expect(res.body.data.createUser.username).toBe(
+            `testuser-${timestamp}`,
+          );
           expect(res.body.data.createUser.role).toBe('USER');
           expect(res.body.data.createUser.id).toBeDefined();
         });
@@ -160,8 +197,22 @@ describe('GraphQL (e2e)', () => {
         .expect(200)
         .expect((res) => {
           expect(res.body.data.documents).toHaveLength(2);
-          expect(res.body.data.documents[0].title).toBe('Document de test');
-          expect(res.body.data.documents[1].title).toBe('Guide utilisateur');
+
+          const documents: any[] = res.body.data.documents;
+          const doc1 = documents.find(
+            (d: any) => d.title === 'Document de test',
+          );
+          const doc2 = documents.find(
+            (d: any) => d.title === 'Guide utilisateur',
+          );
+
+          expect(doc1).toBeDefined();
+          expect(doc1.description).toBe('Ceci est un document de test');
+          expect(doc1.userId).toBe(adminUserId);
+
+          expect(doc2).toBeDefined();
+          expect(doc2.description).toBe('Guide pour les nouveaux utilisateurs');
+          expect(doc2.userId).toBe(regularUserId);
         });
     });
 
@@ -171,8 +222,8 @@ describe('GraphQL (e2e)', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
-            query {
-              getDocumentsByUser(userId: "1") {
+            query($userId: String!) {
+              getDocumentsByUser(userId: $userId) {
                 id
                 title
                 description
@@ -180,11 +231,12 @@ describe('GraphQL (e2e)', () => {
               }
             }
           `,
+          variables: { userId: adminUserId },
         })
         .expect(200)
         .expect((res) => {
           expect(res.body.data.getDocumentsByUser).toHaveLength(1);
-          expect(res.body.data.getDocumentsByUser[0].userId).toBe('1');
+          expect(res.body.data.getDocumentsByUser[0].userId).toBe(adminUserId);
           expect(res.body.data.getDocumentsByUser[0].title).toBe(
             'Document de test',
           );
@@ -197,22 +249,22 @@ describe('GraphQL (e2e)', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
-            query {
-              getDocumentById(id: "1") {
+            query($id: String!) {
+              getDocumentById(id: $id) {
                 id
                 title
                 description
-                fileUrl
                 userId
               }
             }
           `,
+          variables: { id: doc1Id },
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.getDocumentById.id).toBe('1');
+          expect(res.body.data.getDocumentById.id).toBe(doc1Id);
           expect(res.body.data.getDocumentById.title).toBe('Document de test');
-          expect(res.body.data.getDocumentById.userId).toBe('1');
+          expect(res.body.data.getDocumentById.userId).toBe(adminUserId);
         });
     });
 
@@ -222,12 +274,8 @@ describe('GraphQL (e2e)', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
-            mutation {
-              createDocument(createDocumentInput: {
-                title: "Nouveau document test"
-                description: "Description de test"
-                fileUrl: "http://example.com/test.pdf"
-              }) {
+            mutation($createDocumentInput: CreateDocumentInput!) {
+              createDocument(createDocumentInput: $createDocumentInput) {
                 id
                 title
                 description
@@ -236,6 +284,14 @@ describe('GraphQL (e2e)', () => {
               }
             }
           `,
+          variables: {
+            createDocumentInput: {
+              title: 'Nouveau document test',
+              description: 'Description de test',
+              fileUrl: 'http://example.com/test.pdf',
+              userId: adminUserId,
+            },
+          },
         })
         .expect(200)
         .expect((res) => {
@@ -248,8 +304,8 @@ describe('GraphQL (e2e)', () => {
           expect(res.body.data.createDocument.fileUrl).toBe(
             'http://example.com/test.pdf',
           );
+          expect(res.body.data.createDocument.userId).toBe(adminUserId);
           expect(res.body.data.createDocument.id).toBeDefined();
-          expect(res.body.data.createDocument.userId).toBe('1'); // Admin user ID
         });
     });
 
@@ -259,10 +315,11 @@ describe('GraphQL (e2e)', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
-            mutation {
-              deleteDocument(id: "2")
+            mutation($id: String!) {
+              deleteDocument(id: $id)
             }
           `,
+          variables: { id: doc2Id },
         })
         .expect(200)
         .expect((res) => {
@@ -276,18 +333,22 @@ describe('GraphQL (e2e)', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           query: `
-            mutation {
-              updateDocument(id: "1", updateDocumentInput: { title: "Titre modifié" }) {
+            mutation($id: String!, $updateDocumentInput: UpdateDocumentInput!) {
+              updateDocument(id: $id, updateDocumentInput: $updateDocumentInput) {
                 id
                 title
                 description
               }
             }
           `,
+          variables: {
+            id: doc1Id,
+            updateDocumentInput: { title: 'Titre modifié' },
+          },
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.updateDocument.id).toBe('1');
+          expect(res.body.data.updateDocument.id).toBe(doc1Id);
           expect(res.body.data.updateDocument.title).toBe('Titre modifié');
         });
     });

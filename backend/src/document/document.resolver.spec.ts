@@ -94,8 +94,12 @@ describe('DocumentResolver', () => {
   describe('getDocumentsByUser', () => {
     it('should return documents for a specific user when requested by admin', async () => {
       const userId = '1';
-      const userDocuments = mockDocuments.filter(doc => doc.userId === userId);
-      documentService.findByUserId.mockReturnValue(Promise.resolve(userDocuments));
+      const userDocuments = mockDocuments.filter(
+        (doc) => doc.userId === userId,
+      );
+      documentService.findByUserId.mockReturnValue(
+        Promise.resolve(userDocuments),
+      );
 
       const result = await resolver.getDocumentsByUser(userId, mockAdminUser);
 
@@ -117,7 +121,7 @@ describe('DocumentResolver', () => {
       const userId = '1'; // Trying to access admin's documents
 
       await expect(
-        resolver.getDocumentsByUser(userId, mockRegularUser)
+        resolver.getDocumentsByUser(userId, mockRegularUser),
       ).rejects.toThrow('Vous ne pouvez voir que vos propres documents');
     });
   });
@@ -125,7 +129,9 @@ describe('DocumentResolver', () => {
   describe('getDocumentById', () => {
     it('should return a document by id', async () => {
       const documentId = '1';
-      documentService.findById.mockReturnValue(Promise.resolve(mockDocuments[0]));
+      documentService.findById.mockReturnValue(
+        Promise.resolve(mockDocuments[0]),
+      );
 
       const result = await resolver.getDocumentById(documentId);
 
@@ -224,7 +230,9 @@ describe('DocumentResolver', () => {
       };
 
       // Mock findById to return the document (user owns it)
-      documentService.findById.mockReturnValue(Promise.resolve(mockDocuments[0]));
+      documentService.findById.mockReturnValue(
+        Promise.resolve(mockDocuments[0]),
+      );
       documentService.update.mockReturnValue(Promise.resolve(expectedDocument));
 
       const result = await resolver.updateDocument(
@@ -253,7 +261,9 @@ describe('DocumentResolver', () => {
         updatedAt: new Date(),
       };
 
-      documentService.findById.mockReturnValue(Promise.resolve(mockDocuments[0]));
+      documentService.findById.mockReturnValue(
+        Promise.resolve(mockDocuments[0]),
+      );
       documentService.update.mockReturnValue(Promise.resolve(expectedDocument));
 
       const result = await resolver.updateDocument(
@@ -276,14 +286,16 @@ describe('DocumentResolver', () => {
       };
 
       // Mock findById to return the document owned by user '1'
-      documentService.findById.mockReturnValue(Promise.resolve(mockDocuments[0]));
+      documentService.findById.mockReturnValue(
+        Promise.resolve(mockDocuments[0]),
+      );
 
       await expect(
         resolver.updateDocument(
           documentId,
           updateDocumentInput,
           mockRegularUser,
-        )
+        ),
       ).rejects.toThrow('Vous ne pouvez modifier que vos propres documents');
     });
 
@@ -296,7 +308,7 @@ describe('DocumentResolver', () => {
       documentService.findById.mockReturnValue(Promise.resolve(null));
 
       await expect(
-        resolver.updateDocument(documentId, updateDocumentInput, mockAdminUser)
+        resolver.updateDocument(documentId, updateDocumentInput, mockAdminUser),
       ).rejects.toThrow('Document non trouvé');
     });
   });
@@ -305,7 +317,9 @@ describe('DocumentResolver', () => {
     it('should delete a document when user owns it', async () => {
       const documentId = '1';
 
-      documentService.findById.mockReturnValue(Promise.resolve(mockDocuments[0]));
+      documentService.findById.mockReturnValue(
+        Promise.resolve(mockDocuments[0]),
+      );
       documentService.delete.mockReturnValue(Promise.resolve(true));
 
       const result = await resolver.deleteDocument(documentId, mockAdminUser);
@@ -317,10 +331,12 @@ describe('DocumentResolver', () => {
     it('should throw error when user tries to delete document they do not own', async () => {
       const documentId = '1'; // Document owned by user ID '1'
 
-      documentService.findById.mockReturnValue(Promise.resolve(mockDocuments[0]));
+      documentService.findById.mockReturnValue(
+        Promise.resolve(mockDocuments[0]),
+      );
 
       await expect(
-        resolver.deleteDocument(documentId, mockRegularUser)
+        resolver.deleteDocument(documentId, mockRegularUser),
       ).rejects.toThrow('Vous ne pouvez supprimer que vos propres documents');
     });
 
@@ -330,7 +346,7 @@ describe('DocumentResolver', () => {
       documentService.findById.mockReturnValue(Promise.resolve(null));
 
       await expect(
-        resolver.deleteDocument(documentId, mockAdminUser)
+        resolver.deleteDocument(documentId, mockAdminUser),
       ).rejects.toThrow('Document non trouvé');
     });
   });

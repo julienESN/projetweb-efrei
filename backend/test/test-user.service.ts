@@ -1,65 +1,23 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { User } from './user.model';
-import { UserEntity } from './user.entity';
-import { UserRole } from '../common/enums/user-role.enum';
+import { Injectable } from '@nestjs/common';
+import { User } from '../src/user/user.model';
+import { UserEntity } from '../src/user/user.entity';
+import { UserRole } from '../src/common/enums/user-role.enum';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { PrismaService } from '../prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../src/prisma/prisma.service';
 import {
   prismaUserRoleToGraphQL,
   graphQLUserRoleToPrisma,
-} from '../common/utils/prisma-converters';
+} from '../src/common/utils/prisma-converters';
 
 @Injectable()
-export class UserService implements OnModuleInit {
+export class TestUserService {
   constructor(
     private prisma: PrismaService,
     @InjectQueue('user-events') private userEventsQueue: Queue,
   ) {}
 
-  async onModuleInit() {
-    // Créer des utilisateurs de test s'ils n'existent pas
-    await this.createDefaultUsers();
-  }
-
-  private async createDefaultUsers() {
-    try {
-      const existingUsers = await this.prisma.user.count();
-
-      if (existingUsers === 0) {
-        // Créer utilisateur admin par défaut
-        const adminHashedPassword = await bcrypt.hash('password', 10);
-        await this.prisma.user.create({
-          data: {
-            email: 'admin@example.com',
-            username: 'admin',
-            password: adminHashedPassword,
-            role: 'ADMIN',
-          },
-        });
-
-        // Créer utilisateur standard par défaut
-        const userHashedPassword = await bcrypt.hash('password', 10);
-        await this.prisma.user.create({
-          data: {
-            email: 'user@example.com',
-            username: 'user',
-            password: userHashedPassword,
-            role: 'USER',
-          },
-        });
-      }
-    } catch (error) {
-      // En cas d'erreur de DB, on continue sans créer les utilisateurs par défaut
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
-      console.warn(
-        'Impossible de créer les utilisateurs par défaut:',
-        errorMessage,
-      );
-    }
-  }
+  // Pas de onModuleInit pour éviter la création automatique de données de test
 
   async findAll(): Promise<User[]> {
     const users = await this.prisma.user.findMany({
@@ -70,6 +28,9 @@ export class UserService implements OnModuleInit {
         role: true,
         createdAt: true,
         updatedAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
       },
     });
 
@@ -100,25 +61,10 @@ export class UserService implements OnModuleInit {
     };
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
+  async findByEmail(email: string): Promise<any> {
+    return this.prisma.user.findUnique({
       where: { email },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
-
-    if (!user) return null;
-
-    return {
-      ...user,
-      role: prismaUserRoleToGraphQL(user.role),
-    };
   }
 
   // Méthode pour l'authentification (inclut le password)
@@ -193,16 +139,16 @@ export class UserService implements OnModuleInit {
     };
   }
 
-  async update(id: string, userData: Partial<User>): Promise<User | null> {
+  async update(id: string, updateData: Partial<User>): Promise<User | null> {
     try {
       const updatedUser = await this.prisma.user.update({
         where: { id },
         data: {
-          email: userData.email,
-          username: userData.username,
-          role: userData.role
-            ? graphQLUserRoleToPrisma(userData.role)
-            : undefined,
+          ...(updateData.email && { email: updateData.email }),
+          ...(updateData.username && { username: updateData.username }),
+          ...(updateData.role && {
+            role: graphQLUserRoleToPrisma(updateData.role),
+          }),
         },
         select: {
           id: true,
@@ -212,6 +158,12 @@ export class UserService implements OnModuleInit {
           createdAt: true,
           updatedAt: true,
         },
+      });
+
+      void this.userEventsQueue.add('user-event', {
+        action: 'update',
+        userId: id,
+        timestamp: new Date(),
       });
 
       return {

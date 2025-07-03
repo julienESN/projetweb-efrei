@@ -10,8 +10,24 @@ describe('DocumentService', () => {
   let prismaService: PrismaService;
 
   const mockDocuments = [
-    { id: '1', title: 'Document 1', description: 'Description 1', fileUrl: 'url1', userId: '1', createdAt: new Date(), updatedAt: new Date() },
-    { id: '2', title: 'Document 2', description: 'Description 2', fileUrl: null, userId: '2', createdAt: new Date(), updatedAt: new Date() },
+    {
+      id: '1',
+      title: 'Document 1',
+      description: 'Description 1',
+      fileUrl: 'url1',
+      userId: '1',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id: '2',
+      title: 'Document 2',
+      description: 'Description 2',
+      fileUrl: null,
+      userId: '2',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   ];
 
   beforeEach(async () => {
@@ -52,7 +68,9 @@ describe('DocumentService', () => {
 
   describe('findAll', () => {
     it('should return all documents', async () => {
-      jest.spyOn(prismaService.document, 'findMany').mockResolvedValue(mockDocuments as any);
+      jest
+        .spyOn(prismaService.document, 'findMany')
+        .mockResolvedValue(mockDocuments as any);
 
       const documents = await service.findAll();
       expect(documents).toHaveLength(2);
@@ -63,7 +81,9 @@ describe('DocumentService', () => {
 
   describe('findById', () => {
     it('should return a document by id', async () => {
-      jest.spyOn(prismaService.document, 'findUnique').mockResolvedValue(mockDocuments[0] as any);
+      jest
+        .spyOn(prismaService.document, 'findUnique')
+        .mockResolvedValue(mockDocuments[0] as any);
 
       const document = await service.findById('1');
       expect(document).toBeDefined();
@@ -82,7 +102,9 @@ describe('DocumentService', () => {
   describe('findByUserId', () => {
     it('should return documents for a specific user', async () => {
       const userDocuments = [mockDocuments[0]];
-      jest.spyOn(prismaService.document, 'findMany').mockResolvedValue(userDocuments as any);
+      jest
+        .spyOn(prismaService.document, 'findMany')
+        .mockResolvedValue(userDocuments as any);
 
       const documents = await service.findByUserId('1');
       expect(documents).toHaveLength(1);
@@ -112,7 +134,9 @@ describe('DocumentService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      jest.spyOn(prismaService.document, 'create').mockResolvedValue(mockCreatedDocument as any);
+      jest
+        .spyOn(prismaService.document, 'create')
+        .mockResolvedValue(mockCreatedDocument as any);
 
       const newDocument = await service.create(documentData);
 
@@ -149,7 +173,9 @@ describe('DocumentService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      jest.spyOn(prismaService.document, 'create').mockResolvedValue(mockCreatedDocument as any);
+      jest
+        .spyOn(prismaService.document, 'create')
+        .mockResolvedValue(mockCreatedDocument as any);
 
       const newDocument = await service.create(documentData);
 
@@ -174,7 +200,9 @@ describe('DocumentService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      jest.spyOn(prismaService.document, 'update').mockResolvedValue(mockUpdatedDocument as any);
+      jest
+        .spyOn(prismaService.document, 'update')
+        .mockResolvedValue(mockUpdatedDocument as any);
 
       const updatedDocument = await service.update('1', updateData);
 
@@ -188,7 +216,9 @@ describe('DocumentService', () => {
 
     it('should return null for non-existent document', async () => {
       const updateData = { title: 'Titre mis à jour' };
-      jest.spyOn(prismaService.document, 'update').mockRejectedValue(new Error('Record not found'));
+      jest
+        .spyOn(prismaService.document, 'update')
+        .mockRejectedValue(new Error('Record not found'));
 
       const result = await service.update('999', updateData);
 
@@ -213,7 +243,9 @@ describe('DocumentService', () => {
     });
 
     it('should return false for non-existent document', async () => {
-      jest.spyOn(prismaService.document, 'delete').mockRejectedValue(new Error('Record not found'));
+      jest
+        .spyOn(prismaService.document, 'delete')
+        .mockRejectedValue(new Error('Record not found'));
 
       const result = await service.delete('999');
 
