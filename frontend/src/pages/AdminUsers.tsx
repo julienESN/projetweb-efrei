@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from '@apollo/client';
 import { GET_USERS } from '../graphql/queries';
 

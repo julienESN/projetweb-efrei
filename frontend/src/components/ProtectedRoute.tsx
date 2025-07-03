@@ -1,13 +1,14 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
 
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -16,11 +17,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   try {
     const decoded: { exp: number } = jwtDecode(token);
     if (decoded.exp * 1000 < Date.now()) {
-      localStorage.removeItem("token");
+      localStorage.removeItem('token');
       return <Navigate to="/login" replace />;
     }
   } catch (e) {
-    localStorage.removeItem("token");
+    localStorage.removeItem('token');
     return <Navigate to="/login" replace />;
   }
 
