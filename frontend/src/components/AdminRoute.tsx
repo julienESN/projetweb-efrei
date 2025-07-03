@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 

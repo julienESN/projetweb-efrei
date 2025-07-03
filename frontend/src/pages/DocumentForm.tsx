@@ -9,7 +9,9 @@ export default function DocumentForm() {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -22,11 +24,12 @@ export default function DocumentForm() {
       setSuccess(true);
       setTimeout(() => navigate('/documents'), 1200);
     } catch (e) {
-      // Erreur déjà gérée par error
+      console.error(e);
     }
   };
 
-  const isFormValid = form.title.trim() && form.description.trim() && form.fileUrl.trim();
+  const isFormValid =
+    form.title.trim() && form.description.trim() && form.fileUrl.trim();
 
   return (
     <div className="max-w-lg mx-auto mt-10 p-8 bg-white rounded shadow">
@@ -79,7 +82,9 @@ export default function DocumentForm() {
         >
           {loading ? 'Création...' : 'Créer'}
         </button>
-        {success && <p className="text-green-600 text-center mt-2">Document créé !</p>}
+        {success && (
+          <p className="text-green-600 text-center mt-2">Document créé !</p>
+        )}
       </form>
     </div>
   );
