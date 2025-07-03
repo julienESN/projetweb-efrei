@@ -19,7 +19,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<UserEntity | null> {
-    const user = this.userService.findByEmailWithPassword(email);
+    const user = await this.userService.findByEmailWithPassword(email);
     if (user && (await bcrypt.compare(password, user.password))) {
       return user;
     }
@@ -53,7 +53,7 @@ export class AuthService {
 
   async register(registerInput: RegisterInput): Promise<AuthResponse> {
     // Vérifier si l'email existe déjà
-    const existingUser = this.userService.findByEmail(registerInput.email);
+    const existingUser = await this.userService.findByEmail(registerInput.email);
     if (existingUser) {
       throw new UnauthorizedException('Cet email est déjà utilisé');
     }
@@ -66,7 +66,7 @@ export class AuthService {
     );
 
     // Créer l'utilisateur
-    const newUser = this.userService.createWithPassword({
+    const newUser = await this.userService.createWithPassword({
       email: registerInput.email,
       username: registerInput.username,
       password: hashedPassword,

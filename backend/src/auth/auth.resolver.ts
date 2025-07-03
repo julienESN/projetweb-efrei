@@ -32,11 +32,11 @@ export class AuthResolver {
 
   @Query(() => User)
   @UseGuards(GqlAuthGuard)
-  me(
+  async me(
     @CurrentUser() user: { userId: string; email: string; role: string },
-  ): User {
+  ): Promise<User> {
     // Récupérer les données complètes de l'utilisateur
-    const fullUser = this.userService.findById(user.userId);
+    const fullUser = await this.userService.findById(user.userId);
     if (!fullUser) {
       throw new Error('Utilisateur non trouvé');
     }
