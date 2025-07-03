@@ -1,0 +1,275 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="Architecture Projet Web EFREI v2.0" id="architecture">
+    <mxGraphModel dx="1920" dy="1397" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="ARCHITECTURE DU PROJET WEB EFREI v2.0" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="500" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="FRONTEND - React + TypeScript" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="40" y="80" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="&lt;b&gt;React App (Vite)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="60" y="140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="&lt;b&gt;Apollo Client GraphQL&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="220" y="140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="&lt;b&gt;Pages:&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Home&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Login/Register&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Dashboard&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Documents&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Profile&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="60" y="220" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="&lt;b&gt;Components:&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Navbar&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• ProtectedRoute&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• DocumentForm&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• DocumentDetail&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="220" y="220" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="API GRAPHQL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="440" y="180" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="BACKEND - NestJS + GraphQL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="680" y="80" width="360" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="&lt;b&gt;Auth Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• JWT Strategy&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Local Strategy&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Guards&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Decorators&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="700" y="140" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="&lt;b&gt;User Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• UserService&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• UserResolver&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• CRUD Operations&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Role Management&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="860" y="140" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="&lt;b&gt;Document Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• DocumentService&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• DocumentResolver&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• File Management&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• CRUD Operations&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="700" y="260" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="&lt;b&gt;Health Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Health Controller&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Health Processor&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• System Monitoring&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="860" y="260" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="60" value="&lt;b&gt;Common Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• UserRole Enum&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• LogAction Enum&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• EntityType Enum&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Prisma Converters&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4edda;strokeColor=#28a745;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="140" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="61" value="&lt;b&gt;Log Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• LogService&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• LogResolver&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Audit Trail&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Activity Tracking&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4edda;strokeColor=#28a745;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="260" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="MESSAGE QUEUING - BullMQ + Redis" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#f0f0f0;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="680" y="400" width="360" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="&lt;b&gt;Redis Server&lt;br&gt;&lt;/b&gt;Configuration améliorée&lt;br&gt;Support URL/Params" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;" parent="1" vertex="1">
+          <mxGeometry x="700" y="460" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="Document Events Processor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ccffcc;strokeColor=#66ff66;" parent="1" vertex="1">
+          <mxGeometry x="860" y="460" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="17" value="User Events Processor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ccffcc;strokeColor=#66ff66;" parent="1" vertex="1">
+          <mxGeometry x="700" y="540" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="18" value="Health Events Processor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ccffcc;strokeColor=#66ff66;" parent="1" vertex="1">
+          <mxGeometry x="860" y="540" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62" value="Log Events Processor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ccffcc;strokeColor=#66ff66;" parent="1" vertex="1">
+          <mxGeometry x="1000" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="19" value="BASE DE DONNÉES - PostgreSQL + Prisma ORM" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#e6ccff;strokeColor=#9933ff;" parent="1" vertex="1">
+          <mxGeometry x="680" y="640" width="360" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="20" value="&lt;b&gt;Users Table&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• id, email, username&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• password, role&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• timestamps&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ccccff;strokeColor=#6666ff;" parent="1" vertex="1">
+          <mxGeometry x="940" y="690" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="21" value="&lt;b&gt;Documents Table&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• id, title, description&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• fileUrl, userId&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• timestamps&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ccccff;strokeColor=#6666ff;" parent="1" vertex="1">
+          <mxGeometry x="660" y="690" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="&lt;b&gt;Logs Table&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• id, action, entityType&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• entityId, userId&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• details, timestamp&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ccccff;strokeColor=#6666ff;" parent="1" vertex="1">
+          <mxGeometry x="800" y="690" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="23" value="PIPELINE CI/CD - GitHub Actions" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#ffff99;strokeColor=#ffcc00;" parent="1" vertex="1">
+          <mxGeometry x="1200" y="80" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="24" value="&lt;b&gt;GitHub Actions&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Push/PR Triggers&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Multi-branch&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#ffff00;" parent="1" vertex="1">
+          <mxGeometry x="1220" y="140" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="25" value="&lt;b&gt;Test &amp; Lint&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• ESLint 9.x&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Jest Tests&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• E2E Tests&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#ffff00;" parent="1" vertex="1">
+          <mxGeometry x="1380" y="140" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="26" value="&lt;b&gt;Docker Build&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Multi-stage Build&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• DockerHub Push&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Vulnerability Scan&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#ffff00;" parent="1" vertex="1">
+          <mxGeometry x="1220" y="240" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="27" value="&lt;b&gt;Deployment&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Image Tagging&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Security Scanning&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Cache Optimization&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#ffff00;" parent="1" vertex="1">
+          <mxGeometry x="1380" y="240" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="28" value="INFRASTRUCTURE DOCKER" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#ffccff;strokeColor=#ff00ff;" parent="1" vertex="1">
+          <mxGeometry x="1200" y="360" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="29" value="&lt;b&gt;Frontend Container&lt;br&gt;&lt;/b&gt;React 19 + Vite&lt;br&gt;Port 5173" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffddff;strokeColor=#ff55ff;" parent="1" vertex="1">
+          <mxGeometry x="1220" y="420" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="30" value="&lt;b&gt;Backend Container&lt;br&gt;&lt;/b&gt;NestJS 11 + GraphQL&lt;br&gt;Port 3000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffddff;strokeColor=#ff55ff;" parent="1" vertex="1">
+          <mxGeometry x="1380" y="420" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="31" value="&lt;b&gt;Redis Container&lt;br&gt;&lt;/b&gt;IoRedis 5.x&lt;br&gt;Port 6379" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffddff;strokeColor=#ff55ff;" parent="1" vertex="1">
+          <mxGeometry x="1220" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="32" value="&lt;b&gt;PostgreSQL&lt;br&gt;&lt;/b&gt;Prisma 6.x&lt;br&gt;Port 5432" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffddff;strokeColor=#ff55ff;" parent="1" vertex="1">
+          <mxGeometry x="1380" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;strokeColor=#ff6600;" parent="1" source="5" target="8" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="200" as="sourcePoint" />
+            <mxPoint x="410" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="34" value="GraphQL Queries/Mutations" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=8;labelBackgroundColor=none;" parent="33" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint x="15" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="35" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#0066ff;" parent="1" source="8" target="10" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="610" y="200" as="sourcePoint" />
+            <mxPoint x="660" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="36" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#0066ff;" parent="1" source="8" target="11" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="610" y="200" as="sourcePoint" />
+            <mxPoint x="660" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="37" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#0066ff;" parent="1" source="8" target="12" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="610" y="200" as="sourcePoint" />
+            <mxPoint x="660" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="63" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#28a745;" parent="1" source="10" target="60" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="180" as="sourcePoint" />
+            <mxPoint x="1020" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="64" value="Utilise Enums" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=8;labelBackgroundColor=none;" parent="63" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint x="70" y="-11" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="38" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#9933ff;" parent="1" source="11" target="20" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="900" y="260" as="sourcePoint" />
+            <mxPoint x="950" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="39" value="Prisma ORM" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=8;labelBackgroundColor=none;" parent="38" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="40" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#9933ff;" parent="1" source="12" target="21" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="380" as="sourcePoint" />
+            <mxPoint x="870" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="41" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ff0000;" parent="1" source="12" target="15" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="760" y="380" as="sourcePoint" />
+            <mxPoint x="810" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="42" value="Queue Events" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=8;labelBackgroundColor=none;" parent="41" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint x="11" y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="43" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ff0000;" parent="1" source="11" target="15" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="920" y="260" as="sourcePoint" />
+            <mxPoint x="970" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="65" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ff0000;" parent="1" source="61" target="15" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1020" y="320" as="sourcePoint" />
+            <mxPoint x="820" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="44" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#00ff00;" parent="1" source="15" target="16" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="840" y="490" as="sourcePoint" />
+            <mxPoint x="890" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="45" value="Process Jobs" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=8;labelBackgroundColor=none;" parent="44" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint x="2" y="-11" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="46" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#00ff00;" parent="1" source="15" target="17" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="760" y="530" as="sourcePoint" />
+            <mxPoint x="810" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#00ff00;" parent="1" source="15" target="62" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="490" as="sourcePoint" />
+            <mxPoint x="1020" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="67" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#9933ff;" parent="1" source="61" target="22" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1020" y="360" as="sourcePoint" />
+            <mxPoint x="900" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="47" value="&lt;b&gt;LÉGENDE DES FLUX&lt;br&gt;&lt;/b&gt;🔵 Requêtes GraphQL&lt;br&gt;🔴 Events Queue&lt;br&gt;🟢 Processing Jobs&lt;br&gt;🟣 Database Access&lt;br&gt;🟢&amp;nbsp;Module Dependencies" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;" parent="1" vertex="1">
+          <mxGeometry x="40" y="400" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="48" value="FLUX DE CRÉATION/SUPPRESSION DE DOCUMENT" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="540" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="49" value="1. Utilisateur crée/supprime document" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="40" y="580" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="50" value="2. GraphQL Mutation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="200" y="580" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="51" value="3. DocumentService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="340" y="580" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="52" value="4. Database Update (Prisma)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6ccff;strokeColor=#9933ff;" parent="1" vertex="1">
+          <mxGeometry x="40" y="640" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="53" value="5. Queue Event (Redis)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;" parent="1" vertex="1">
+          <mxGeometry x="200" y="640" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="54" value="6. Log Creation (Audit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4edda;strokeColor=#28a745;" parent="1" vertex="1">
+          <mxGeometry x="340" y="640" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="55" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="49" target="50" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="600" as="sourcePoint" />
+            <mxPoint x="230" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="56" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="50" target="51" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="320" y="600" as="sourcePoint" />
+            <mxPoint x="370" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="57" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="51" target="52" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="620" as="sourcePoint" />
+            <mxPoint x="450" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="58" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="52" target="53" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="660" as="sourcePoint" />
+            <mxPoint x="230" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="59" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="53" target="54" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="320" y="660" as="sourcePoint" />
+            <mxPoint x="370" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

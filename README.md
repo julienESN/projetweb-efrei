@@ -4,6 +4,24 @@
 
 Développer, par groupe de 3 à 4 étudiants, une plateforme sécurisée de gestion documentaire. Cette plateforme permet à des utilisateurs authentifiés de créer, lire et organiser des documents numériques, tout en intégrant des outils de qualité logicielle et de déploiement continu. En fin de TD, une présentation du projet, des choix d'architecture et une démonstration technique sont attendues.
 
+## 🏗️ Architecture du Projet
+
+![Architecture du Projet](archi/architecture-projet.webp)
+
+Notre architecture suit un modèle **3-tiers moderne** avec :
+
+- **Frontend** : React 19 + TypeScript avec Apollo Client
+- **Backend** : NestJS 11 + GraphQL avec modules Auth, User, Document, Health, Common et Log
+- **Base de données** : PostgreSQL avec Prisma ORM 6.x
+- **Message Queuing** : Redis + BullMQ avec IoRedis 5.x
+- **Pipeline CI/CD** : GitHub Actions avec tests automatisés et déploiement Docker
+
+### 📋 Ressources
+
+- **📖 Documentation complète** : [Architecture détaillée](archi/ARCHITECTURE.md)
+- **🎯 Présentation du projet** : [Présentation Canva](https://www.canva.com/design/DAGsGIfoiHc/xMPhbauWVgOhlMQpjb-BSQ/edit?utm_content=DAGsGIfoiHc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+- **📊 Diagramme d'architecture** : [Fichier Draw.io](archi/architecture-projet.drawio)
+
 ## Prérequis techniques
 
 - Utilisation de **Nest.js**
