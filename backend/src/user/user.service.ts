@@ -19,49 +19,45 @@ export class UserService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    // Créer des utilisateurs par défaut s'ils n'existent pas
+    // Créer des utilisateurs de test s'ils n'existent pas
     await this.createDefaultUsers();
   }
 
   private async createDefaultUsers() {
     try {
-      // Vérifier si les utilisateurs par défaut existent déjà
-      const adminExists = await this.prisma.user.findUnique({
-        where: { email: 'admin@example.com' },
-      });
+      const existingUsers = await this.prisma.user.count();
 
-      const userExists = await this.prisma.user.findUnique({
-        where: { email: 'user@example.com' },
-      });
-
-      // Créer l'admin par défaut
-      if (!adminExists) {
-        const hashedPassword = await bcrypt.hash('password', 10);
+      if (existingUsers === 0) {
+        // Créer utilisateur admin par défaut
+        const adminHashedPassword = await bcrypt.hash('password', 10);
         await this.prisma.user.create({
           data: {
             email: 'admin@example.com',
             username: 'admin',
-            password: hashedPassword,
+            password: adminHashedPassword,
             role: 'ADMIN',
           },
         });
-      }
 
-      // Créer l'utilisateur par défaut
-      if (!userExists) {
-        const hashedPassword = await bcrypt.hash('password', 10);
+        // Créer utilisateur standard par défaut
+        const userHashedPassword = await bcrypt.hash('password', 10);
         await this.prisma.user.create({
           data: {
             email: 'user@example.com',
             username: 'user',
-            password: hashedPassword,
+            password: userHashedPassword,
             role: 'USER',
           },
         });
       }
     } catch (error) {
       // En cas d'erreur de DB, on continue sans créer les utilisateurs par défaut
-      console.warn('Impossible de créer les utilisateurs par défaut:', error.message);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erreur inconnue';
+      console.warn(
+        'Impossible de créer les utilisateurs par défaut:',
+        errorMessage,
+      );
     }
   }
 
@@ -76,8 +72,8 @@ export class UserService implements OnModuleInit {
         updatedAt: true,
       },
     });
-    
-    return users.map(user => ({
+
+    return users.map((user) => ({
       ...user,
       role: prismaUserRoleToGraphQL(user.role),
     }));
@@ -95,9 +91,9 @@ export class UserService implements OnModuleInit {
         updatedAt: true,
       },
     });
-    
+
     if (!user) return null;
-    
+
     return {
       ...user,
       role: prismaUserRoleToGraphQL(user.role),
@@ -116,9 +112,9 @@ export class UserService implements OnModuleInit {
         updatedAt: true,
       },
     });
-    
+
     if (!user) return null;
-    
+
     return {
       ...user,
       role: prismaUserRoleToGraphQL(user.role),
@@ -130,9 +126,9 @@ export class UserService implements OnModuleInit {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
-    
+
     if (!user) return null;
-    
+
     return {
       ...user,
       role: prismaUserRoleToGraphQL(user.role),
@@ -204,7 +200,9 @@ export class UserService implements OnModuleInit {
         data: {
           email: userData.email,
           username: userData.username,
-          role: userData.role ? graphQLUserRoleToPrisma(userData.role) : undefined,
+          role: userData.role
+            ? graphQLUserRoleToPrisma(userData.role)
+            : undefined,
         },
         select: {
           id: true,
@@ -215,12 +213,12 @@ export class UserService implements OnModuleInit {
           updatedAt: true,
         },
       });
-      
+
       return {
         ...updatedUser,
         role: prismaUserRoleToGraphQL(updatedUser.role),
       };
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -238,7 +236,7 @@ export class UserService implements OnModuleInit {
       });
 
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

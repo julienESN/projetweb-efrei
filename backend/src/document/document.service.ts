@@ -4,6 +4,16 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
 
+interface PrismaDocument {
+  id: string;
+  title: string;
+  description: string;
+  fileUrl: string | null;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 @Injectable()
 export class DocumentService implements OnModuleInit {
   constructor(
@@ -19,13 +29,13 @@ export class DocumentService implements OnModuleInit {
   private async createDefaultDocuments() {
     try {
       const existingDocuments = await this.prisma.document.count();
-      
+
       if (existingDocuments === 0) {
         // Récupérer les utilisateurs par défaut pour associer les documents
         const adminUser = await this.prisma.user.findUnique({
           where: { email: 'admin@example.com' },
         });
-        
+
         const regularUser = await this.prisma.user.findUnique({
           where: { email: 'user@example.com' },
         });
@@ -54,11 +64,16 @@ export class DocumentService implements OnModuleInit {
       }
     } catch (error) {
       // En cas d'erreur de DB, on continue sans créer les documents par défaut
-      console.warn('Impossible de créer les documents par défaut:', error.message);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erreur inconnue';
+      console.warn(
+        'Impossible de créer les documents par défaut:',
+        errorMessage,
+      );
     }
   }
 
-  private convertPrismaToGraphQL(doc: any): Document {
+  private convertPrismaToGraphQL(doc: PrismaDocument): Document {
     return {
       ...doc,
       fileUrl: doc.fileUrl || undefined, // Convertir null en undefined
@@ -69,7 +84,7 @@ export class DocumentService implements OnModuleInit {
     const documents = await this.prisma.document.findMany({
       orderBy: { createdAt: 'desc' },
     });
-    return documents.map(doc => this.convertPrismaToGraphQL(doc));
+    return documents.map((doc) => this.convertPrismaToGraphQL(doc));
   }
 
   async findById(id: string): Promise<Document | null> {
@@ -84,7 +99,7 @@ export class DocumentService implements OnModuleInit {
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
-    return documents.map(doc => this.convertPrismaToGraphQL(doc));
+    return documents.map((doc) => this.convertPrismaToGraphQL(doc));
   }
 
   async create(documentData: Partial<Document>): Promise<Document> {
@@ -106,7 +121,10 @@ export class DocumentService implements OnModuleInit {
     return this.convertPrismaToGraphQL(newDocument);
   }
 
-  async update(id: string, documentData: Partial<Document>): Promise<Document | null> {
+  async update(
+    id: string,
+    documentData: Partial<Document>,
+  ): Promise<Document | null> {
     try {
       const updatedDocument = await this.prisma.document.update({
         where: { id },
@@ -117,7 +135,7 @@ export class DocumentService implements OnModuleInit {
         },
       });
       return this.convertPrismaToGraphQL(updatedDocument);
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -135,7 +153,7 @@ export class DocumentService implements OnModuleInit {
       });
 
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

@@ -11,8 +11,22 @@ describe('UserService', () => {
   let prismaService: PrismaService;
 
   const mockUsers = [
-    { id: '1', email: 'admin@example.com', username: 'admin', role: 'ADMIN', createdAt: new Date(), updatedAt: new Date() },
-    { id: '2', email: 'user@example.com', username: 'user', role: 'USER', createdAt: new Date(), updatedAt: new Date() },
+    {
+      id: '1',
+      email: 'admin@example.com',
+      username: 'admin',
+      role: 'ADMIN',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id: '2',
+      email: 'user@example.com',
+      username: 'user',
+      role: 'USER',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   ];
 
   beforeEach(async () => {
@@ -53,7 +67,9 @@ describe('UserService', () => {
 
   describe('findAll', () => {
     it('should return all users', async () => {
-      jest.spyOn(prismaService.user, 'findMany').mockResolvedValue(mockUsers as any);
+      jest
+        .spyOn(prismaService.user, 'findMany')
+        .mockResolvedValue(mockUsers as any);
 
       const users = await service.findAll();
       expect(users).toHaveLength(2);
@@ -64,7 +80,9 @@ describe('UserService', () => {
 
   describe('findById', () => {
     it('should return a user by id', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUsers[0] as any);
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUsers[0] as any);
 
       const user = await service.findById('1');
       expect(user).toBeDefined();
@@ -82,7 +100,9 @@ describe('UserService', () => {
 
   describe('findByEmail', () => {
     it('should return a user by email', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUsers[0] as any);
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUsers[0] as any);
 
       const user = await service.findByEmail('admin@example.com');
       expect(user).toBeDefined();
@@ -113,7 +133,9 @@ describe('UserService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      jest.spyOn(prismaService.user, 'create').mockResolvedValue(mockCreatedUser as any);
+      jest
+        .spyOn(prismaService.user, 'create')
+        .mockResolvedValue(mockCreatedUser as any);
 
       const newUser = await service.create(userData);
 
@@ -146,7 +168,9 @@ describe('UserService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      jest.spyOn(prismaService.user, 'create').mockResolvedValue(mockCreatedUser as any);
+      jest
+        .spyOn(prismaService.user, 'create')
+        .mockResolvedValue(mockCreatedUser as any);
 
       const newUser = await service.create(userData);
 
@@ -169,7 +193,9 @@ describe('UserService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      jest.spyOn(prismaService.user, 'update').mockResolvedValue(mockUpdatedUser as any);
+      jest
+        .spyOn(prismaService.user, 'update')
+        .mockResolvedValue(mockUpdatedUser as any);
 
       const updatedUser = await service.update('1', updateData);
 
@@ -183,7 +209,9 @@ describe('UserService', () => {
 
     it('should return null for non-existent user', async () => {
       const updateData = { username: 'updated' };
-      jest.spyOn(prismaService.user, 'update').mockRejectedValue(new Error('Record not found'));
+      jest
+        .spyOn(prismaService.user, 'update')
+        .mockRejectedValue(new Error('Record not found'));
 
       const result = await service.update('999', updateData);
 
@@ -208,7 +236,9 @@ describe('UserService', () => {
     });
 
     it('should return false for non-existent user', async () => {
-      jest.spyOn(prismaService.user, 'delete').mockRejectedValue(new Error('Record not found'));
+      jest
+        .spyOn(prismaService.user, 'delete')
+        .mockRejectedValue(new Error('Record not found'));
 
       const result = await service.delete('999');
 
