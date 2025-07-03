@@ -8,7 +8,6 @@ export function prismaUserRoleToGraphQL(role: PrismaUserRole): GraphQLUserRole {
     case 'USER':
       return GraphQLUserRole.USER;
     default:
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown user role: ${role}`);
   }
 }
