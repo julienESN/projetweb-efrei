@@ -8,6 +8,7 @@ import { UserService } from '../user/user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { getQueueToken } from '@nestjs/bullmq';
+import { PrismaModule } from '../prisma/prisma.module';
 
 describe('AuthService Integration Tests', () => {
   let app: INestApplication;
@@ -26,6 +27,7 @@ describe('AuthService Integration Tests', () => {
           secret: 'test-secret',
           signOptions: { expiresIn: '1h' },
         }),
+        PrismaModule,
       ],
       providers: [
         // Services Auth

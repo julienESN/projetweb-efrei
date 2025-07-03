@@ -31,21 +31,45 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: 'backend/package-lock.json'
 
       - name: Installation des dépendances
         run: npm ci
+        working-directory: ./backend
 
       - name: Linter (ESLint)
         run: npm run lint
+        working-directory: ./backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NODE_ENV: test
 
       - name: Tests unitaires
         run: npm run test
+        working-directory: ./backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-secret-key-for-ci' }}
+          NODE_ENV: test
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
 
       - name: Tests e2e
         run: npm run test:e2e
+        working-directory: ./backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-secret-key-for-ci' }}
+          NODE_ENV: test
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
 
       - name: Build de l'application
         run: npm run build
+        working-directory: ./backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NODE_ENV: production
 
   # Job 2: Build et Push de l'image Docker
   docker-build:
@@ -79,7 +103,7 @@ jobs:
       - name: Build et Push de l'image Docker
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./backend
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useMutation } from "@apollo/client";
-import { LOGIN_MUTATION } from "../graphql/mutation";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useMutation } from '@apollo/client';
+import { LOGIN_MUTATION } from '../graphql/mutation';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [login, { loading, error }] = useMutation(LOGIN_MUTATION);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,12 +17,12 @@ const Login: React.FC = () => {
         },
       });
       if (data?.login?.access_token) {
-        localStorage.setItem("token", data.login.access_token);
-        alert("Connexion réussie !");
-        window.location.href = "/"; // Redirection après login
+        localStorage.setItem('token', data.login.access_token);
+        alert('Connexion réussie !');
+        window.location.href = '/'; // Redirection après login
       }
     } catch (err) {
-      // L'erreur est déjà gérée par Apollo
+      console.error(err);
     }
   };
 
@@ -54,17 +54,17 @@ const Login: React.FC = () => {
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           disabled={loading}
         >
-          {loading ? "Connexion..." : "Se connecter"}
+          {loading ? 'Connexion...' : 'Se connecter'}
         </button>
         {error && (
-          <div className="text-red-500 mt-4 text-center">
-            {error.message}
-          </div>
+          <div className="text-red-500 mt-4 text-center">{error.message}</div>
         )}
       </form>
       <div className="mt-4 text-center">
         <span>Pas encore de compte ? </span>
-          <Link to="/register" className="text-blue-600 hover:underline">S'inscrire</Link>
+        <Link to="/register" className="text-blue-600 hover:underline">
+          S'inscrire
+        </Link>
       </div>
     </div>
   );
