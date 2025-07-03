@@ -1,84 +1,75 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
 import Documents from "./pages/Documents";
 import DocumentDetail from "./pages/DocumentDetail";
 import DocumentForm from "./pages/DocumentForm";
 import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDocuments from "./pages/AdminDocuments";
+import AdminUsers from "./pages/AdminUsers";
+import AdminRoute from "./components/AdminRoute";
+
+function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/login" || location.pathname === "/register";
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      {children}
+    </>
+  );
+}
+
+const protectedRoutes = [
+  { path: "/", element: <Home /> },
+  { path: "/documents", element: <Documents /> },
+  { path: "/documents/new", element: <DocumentForm /> },
+  { path: "/documents/:id", element: <DocumentDetail /> },
+  { path: "/documents/:id/edit", element: <DocumentForm /> },
+  { path: "/profile", element: <Profile /> },
+];
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+      <Layout>
       <Routes>
         {/* Routes publiques */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* Routes protégées */}
+        {protectedRoutes.map(({ path, element }) => (
+            <Route
+              key={path}
+              path={path}
+              element={<ProtectedRoute>{element}</ProtectedRoute>}
+            />
+          ))}
+
+        {/* Routes admin protégées */}
         <Route
-          path="/"
+          path="/admin/documents"
           element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
+            <AdminRoute>
+              <AdminDocuments />
+            </AdminRoute>
           }
         />
         <Route
-          path="/dashboard"
+          path="/admin/users"
           element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
+            <AdminRoute>
+              <AdminUsers />
+            </AdminRoute>
           }
         />
-        <Route
-          path="/documents"
-          element={
-            <ProtectedRoute>
-              <Documents />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/documents/new"
-          element={
-            <ProtectedRoute>
-              <DocumentForm />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/documents/:id"
-          element={
-            <ProtectedRoute>
-              <DocumentDetail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/documents/:id/edit"
-          element={
-            <ProtectedRoute>
-              <DocumentForm />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<NotFound />} />
+
       </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
