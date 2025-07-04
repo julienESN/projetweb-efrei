@@ -10,10 +10,19 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../common/enums/user-role.enum';
 
+/**
+ * Resolver GraphQL pour la gestion des utilisateurs.
+ * Gère les opérations CRUD sur les utilisateurs avec contrôle d'accès basé sur les rôles.
+ */
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * Récupère la liste de tous les utilisateurs du système.
+   * Accessible uniquement aux administrateurs.
+   * @returns Liste complète de tous les utilisateurs
+   */
   @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -21,11 +30,22 @@ export class UserResolver {
     return this.userService.findAll();
   }
 
+  /**
+   * Récupère un utilisateur spécifique par son identifiant.
+   * @param id - L'identifiant unique de l'utilisateur
+   * @returns L'utilisateur correspondant ou null s'il n'existe pas
+   */
   @Query(() => User, { name: 'user', nullable: true })
   async findOne(@Args('id') id: string): Promise<User | null> {
     return this.userService.findById(id);
   }
 
+  /**
+   * Crée un nouvel utilisateur dans le système.
+   * Accessible uniquement aux administrateurs.
+   * @param createUserInput - Les données de l'utilisateur à créer
+   * @returns L'utilisateur créé
+   */
   @Mutation(() => User)
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -35,6 +55,14 @@ export class UserResolver {
     return this.userService.create(createUserInput);
   }
 
+  /**
+   * Met à jour les informations d'un utilisateur existant.
+   * Un utilisateur ne peut modifier que son propre profil, sauf s'il est administrateur.
+   * @param id - L'identifiant de l'utilisateur à modifier
+   * @param updateUserInput - Les nouvelles données de l'utilisateur
+   * @param currentUser - L'utilisateur authentifié effectuant la modification
+   * @returns L'utilisateur modifié ou null s'il n'existe pas
+   */
   @Mutation(() => User, { nullable: true })
   @UseGuards(GqlAuthGuard)
   async updateUser(
@@ -50,6 +78,12 @@ export class UserResolver {
     return this.userService.update(id, updateUserInput);
   }
 
+  /**
+   * Supprime un utilisateur du système.
+   * Accessible uniquement aux administrateurs.
+   * @param id - L'identifiant de l'utilisateur à supprimer
+   * @returns true si la suppression a réussi, false sinon
+   */
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)

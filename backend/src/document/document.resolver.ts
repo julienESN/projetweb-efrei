@@ -10,10 +10,19 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../common/enums/user-role.enum';
 
+/**
+ * Resolver GraphQL pour la gestion des documents.
+ * Gère les opérations CRUD sur les documents avec contrôle d'accès basé sur les rôles.
+ */
 @Resolver(() => Document)
 export class DocumentResolver {
   constructor(private readonly documentService: DocumentService) {}
 
+  /**
+   * Récupère tous les documents du système.
+   * Accessible uniquement aux administrateurs.
+   * @returns Liste complète de tous les documents
+   */
   @Query(() => [Document], { name: 'documents' })
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -21,6 +30,13 @@ export class DocumentResolver {
     return this.documentService.findAll();
   }
 
+  /**
+   * Récupère les documents d'un utilisateur spécifique.
+   * Un utilisateur ne peut voir que ses propres documents, sauf s'il est administrateur.
+   * @param userId - L'identifiant de l'utilisateur dont on veut récupérer les documents
+   * @param currentUser - L'utilisateur authentifié effectuant la requête
+   * @returns Liste des documents de l'utilisateur spécifié
+   */
   @Query(() => [Document], { name: 'getDocumentsByUser' })
   @UseGuards(GqlAuthGuard)
   async getDocumentsByUser(
@@ -35,11 +51,23 @@ export class DocumentResolver {
     return this.documentService.findByUserId(userId);
   }
 
+  /**
+   * Récupère un document spécifique par son identifiant.
+   * @param id - L'identifiant unique du document
+   * @returns Le document correspondant ou null s'il n'existe pas
+   */
   @Query(() => Document, { name: 'getDocumentById', nullable: true })
   async getDocumentById(@Args('id') id: string): Promise<Document | null> {
     return this.documentService.findById(id);
   }
 
+  /**
+   * Crée un nouveau document.
+   * Le document est automatiquement associé à l'utilisateur authentifié.
+   * @param createDocumentInput - Les données du document à créer
+   * @param currentUser - L'utilisateur authentifié créant le document
+   * @returns Le document créé
+   */
   @Mutation(() => Document)
   @UseGuards(GqlAuthGuard)
   async createDocument(
@@ -55,6 +83,14 @@ export class DocumentResolver {
     return this.documentService.create(documentWithUser);
   }
 
+  /**
+   * Met à jour un document existant.
+   * Un utilisateur ne peut modifier que ses propres documents, sauf s'il est administrateur.
+   * @param id - L'identifiant du document à modifier
+   * @param updateDocumentInput - Les nouvelles données du document
+   * @param currentUser - L'utilisateur authentifié effectuant la modification
+   * @returns Le document modifié ou null s'il n'existe pas
+   */
   @Mutation(() => Document, { nullable: true })
   @UseGuards(GqlAuthGuard)
   async updateDocument(
@@ -79,6 +115,13 @@ export class DocumentResolver {
     return this.documentService.update(id, updateDocumentInput);
   }
 
+  /**
+   * Supprime un document existant.
+   * Un utilisateur ne peut supprimer que ses propres documents, sauf s'il est administrateur.
+   * @param id - L'identifiant du document à supprimer
+   * @param currentUser - L'utilisateur authentifié effectuant la suppression
+   * @returns true si la suppression a réussi, false sinon
+   */
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard)
   async deleteDocument(

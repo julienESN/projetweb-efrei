@@ -9,6 +9,10 @@ import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from '../user/user.model';
 
+/**
+ * Resolver GraphQL pour la gestion de l'authentification.
+ * Gère les opérations de connexion, inscription et récupération du profil utilisateur.
+ */
 @Resolver()
 export class AuthResolver {
   constructor(
@@ -16,6 +20,11 @@ export class AuthResolver {
     private userService: UserService,
   ) {}
 
+  /**
+   * Authentifie un utilisateur avec ses identifiants.
+   * @param loginInput - Les données de connexion (email et mot de passe)
+   * @returns Réponse d'authentification contenant le token JWT et les informations utilisateur
+   */
   @Mutation(() => AuthResponse)
   async login(
     @Args('loginInput') loginInput: LoginInput,
@@ -23,6 +32,11 @@ export class AuthResolver {
     return this.authService.login(loginInput);
   }
 
+  /**
+   * Inscrit un nouvel utilisateur dans le système.
+   * @param registerInput - Les données d'inscription (nom, email, mot de passe)
+   * @returns Réponse d'authentification contenant le token JWT et les informations utilisateur
+   */
   @Mutation(() => AuthResponse)
   async register(
     @Args('registerInput') registerInput: RegisterInput,
@@ -30,6 +44,12 @@ export class AuthResolver {
     return this.authService.register(registerInput);
   }
 
+  /**
+   * Récupère les informations complètes de l'utilisateur authentifié.
+   * Nécessite une authentification valide (token JWT).
+   * @param user - Les données de l'utilisateur extrait du token JWT
+   * @returns Les informations complètes de l'utilisateur connecté
+   */
   @Query(() => User)
   @UseGuards(GqlAuthGuard)
   async me(
