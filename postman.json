@@ -1,0 +1,471 @@
+{
+	"info": {
+		"_postman_id": "f9c3ead2-d286-44c8-a499-2a36fcf61213",
+		"name": "Projet Web Efrei",
+		"description": "Sofiane Fares\n\nJulien Esnault\n\nClément Suire\n\nGalaad Filâtre",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46300404",
+		"_collection_link": "https://sofianefares.postman.co/workspace/Sofiane-Fares's-Workspace~e649fe57-d047-469c-840c-e02347de9ae9/collection/46300404-f9c3ead2-d286-44c8-a499-2a36fcf61213?action=share&source=collection_link&creator=46300404"
+	},
+	"item": [
+		{
+			"name": "REST Endpoints",
+			"item": [
+				{
+					"name": "Hello World",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Endpoint principal qui retourne 'Hello World!'"
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Vérifie la santé de l'application et ajoute un job à la queue Redis"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints REST de l'API"
+		},
+		{
+			"name": "GraphQL - Queries",
+			"item": [
+				{
+					"name": "Ping Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query { result }\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Test de base GraphQL - retourne 'ok'"
+					},
+					"response": []
+				},
+				{
+					"name": "Tous les utilisateurs",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query { users { id email username role createdAt updatedAt } }\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Récupère tous les utilisateurs"
+					},
+					"response": []
+				},
+				{
+					"name": "Utilisateur par ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query($id: String!) { user(id: $id) { id email username role createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": \"1\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Récupère un utilisateur spécifique par son ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Tous les documents",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query { documents { id title description fileUrl userId createdAt updatedAt } }\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Récupère tous les documents"
+					},
+					"response": []
+				},
+				{
+					"name": "Documents d'un utilisateur",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query($userId: String!) { getDocumentsByUser(userId: $userId) { id title description fileUrl userId createdAt updatedAt } }\",\n  \"variables\": {\n    \"userId\": \"1\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Récupère tous les documents d'un utilisateur spécifique"
+					},
+					"response": []
+				},
+				{
+					"name": "Document par ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query($id: String!) { getDocumentById(id: $id) { id title description fileUrl userId createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": \"1\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Récupère un document spécifique par son ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Queries GraphQL pour la lecture de données"
+		},
+		{
+			"name": "GraphQL - Mutations",
+			"item": [
+				{
+					"name": "Créer un utilisateur",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($input: CreateUserInput!) { createUser(createUserInput: $input) { id email username role createdAt updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"nouveau@example.com\",\n      \"username\": \"nouveauuser\",\n      \"role\": \"USER\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Crée un nouvel utilisateur"
+					},
+					"response": []
+				},
+				{
+					"name": "Créer un utilisateur Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($input: CreateUserInput!) { createUser(createUserInput: $input) { id email username role createdAt updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"admin2@example.com\",\n      \"username\": \"admin2\",\n      \"role\": \"ADMIN\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Crée un nouvel utilisateur avec le rôle ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Mettre à jour un utilisateur",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($id: String!, $input: UpdateUserInput!) { updateUser(id: $id, updateUserInput: $input) { id email username role updatedAt } }\",\n  \"variables\": {\n    \"id\": \"1\",\n    \"input\": {\n      \"username\": \"admin-modifie\",\n      \"email\": \"admin-modifie@example.com\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Met à jour les informations d'un utilisateur existant"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer un utilisateur",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($id: String!) { deleteUser(id: $id) }\",\n  \"variables\": {\n    \"id\": \"2\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Supprime un utilisateur (⚠️ Attention: suppression définitive)"
+					},
+					"response": []
+				},
+				{
+					"name": "Créer un document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($input: CreateDocumentInput!) { createDocument(createDocumentInput: $input) { id title description fileUrl userId createdAt updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"title\": \"Nouveau Document\",\n      \"description\": \"Description du nouveau document\",\n      \"fileUrl\": \"https://example.com/nouveau-fichier.pdf\",\n      \"userId\": \"1\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Crée un nouveau document avec URL de fichier"
+					},
+					"response": []
+				},
+				{
+					"name": "Créer un document sans fichier",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($input: CreateDocumentInput!) { createDocument(createDocumentInput: $input) { id title description fileUrl userId createdAt updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"title\": \"Document Texte\",\n      \"description\": \"Document sans fichier attaché\",\n      \"userId\": \"1\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Crée un nouveau document sans URL de fichier"
+					},
+					"response": []
+				},
+				{
+					"name": "Mettre à jour un document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($id: String!, $input: UpdateDocumentInput!) { updateDocument(id: $id, updateDocumentInput: $input) { id title description fileUrl updatedAt } }\",\n  \"variables\": {\n    \"id\": \"1\",\n    \"input\": {\n      \"title\": \"Document de test - Modifié\",\n      \"description\": \"Description mise à jour\",\n      \"fileUrl\": \"https://example.com/fichier-modifie.pdf\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Met à jour les informations d'un document existant"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer un document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($id: String!) { deleteDocument(id: $id) }\",\n  \"variables\": {\n    \"id\": \"2\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Supprime un document (⚠️ Attention: suppression définitive)"
+					},
+					"response": []
+				}
+			],
+			"description": "Mutations GraphQL pour la création, modification et suppression de données"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}
