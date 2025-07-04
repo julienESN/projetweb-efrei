@@ -1,13 +1,13 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
   <diagram name="Architecture Projet Web EFREI v2.0" id="architecture">
-    <mxGraphModel dx="1152" dy="838" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1646" dy="1197" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="2" value="ARCHITECTURE DU PROJET WEB EFREI v2.0" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="500" y="20" width="400" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="3" value="FRONTEND - React + TypeScript" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+        <mxCell id="3" value="FRONTEND - React + Vite" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="40" y="80" width="320" height="40" as="geometry" />
         </mxCell>
         <mxCell id="4" value="&lt;b&gt;React App (Vite)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
@@ -29,22 +29,22 @@
           <mxGeometry x="680" y="80" width="360" height="40" as="geometry" />
         </mxCell>
         <mxCell id="10" value="&lt;b&gt;Auth Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• JWT Strategy&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Local Strategy&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Guards&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Decorators&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-          <mxGeometry x="700" y="140" width="120" height="100" as="geometry" />
+          <mxGeometry x="640" y="130" width="120" height="100" as="geometry" />
         </mxCell>
         <mxCell id="11" value="&lt;b&gt;User Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• UserService&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• UserResolver&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• CRUD Operations&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Role Management&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-          <mxGeometry x="860" y="140" width="120" height="100" as="geometry" />
+          <mxGeometry x="800" y="130" width="120" height="100" as="geometry" />
         </mxCell>
         <mxCell id="12" value="&lt;b&gt;Document Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• DocumentService&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• DocumentResolver&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• File Management&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• CRUD Operations&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-          <mxGeometry x="700" y="260" width="120" height="100" as="geometry" />
+          <mxGeometry x="640" y="250" width="120" height="100" as="geometry" />
         </mxCell>
         <mxCell id="13" value="&lt;b&gt;Health Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Health Controller&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Health Processor&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• System Monitoring&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-          <mxGeometry x="860" y="260" width="120" height="100" as="geometry" />
+          <mxGeometry x="800" y="250" width="120" height="100" as="geometry" />
         </mxCell>
         <mxCell id="60" value="&lt;b&gt;Common Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• UserRole Enum&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• LogAction Enum&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• EntityType Enum&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Prisma Converters&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4edda;strokeColor=#28a745;" parent="1" vertex="1">
-          <mxGeometry x="1020" y="140" width="120" height="100" as="geometry" />
+          <mxGeometry x="960" y="130" width="120" height="100" as="geometry" />
         </mxCell>
         <mxCell id="61" value="&lt;b&gt;Log Module&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• LogService&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• LogResolver&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Audit Trail&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Activity Tracking&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4edda;strokeColor=#28a745;" parent="1" vertex="1">
-          <mxGeometry x="1020" y="260" width="120" height="100" as="geometry" />
+          <mxGeometry x="960" y="250" width="120" height="100" as="geometry" />
         </mxCell>
         <mxCell id="14" value="MESSAGE QUEUING - BullMQ + Redis" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#f0f0f0;strokeColor=#666666;" parent="1" vertex="1">
           <mxGeometry x="680" y="400" width="360" height="40" as="geometry" />
@@ -77,31 +77,31 @@
           <mxGeometry x="800" y="690" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="23" value="PIPELINE CI/CD - GitHub Actions" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#ffff99;strokeColor=#ffcc00;" parent="1" vertex="1">
-          <mxGeometry x="1200" y="80" width="320" height="40" as="geometry" />
+          <mxGeometry x="1180" y="80" width="320" height="40" as="geometry" />
         </mxCell>
         <mxCell id="24" value="&lt;b&gt;GitHub Actions&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Push/PR Triggers&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Multi-branch&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#ffff00;" parent="1" vertex="1">
-          <mxGeometry x="1220" y="140" width="120" height="80" as="geometry" />
+          <mxGeometry x="1200" y="140" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="25" value="&lt;b&gt;Test &amp; Lint&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• ESLint 9.x&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Jest Tests&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• E2E Tests&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#ffff00;" parent="1" vertex="1">
-          <mxGeometry x="1380" y="140" width="120" height="80" as="geometry" />
+          <mxGeometry x="1360" y="140" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="26" value="&lt;b&gt;Docker Build&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Multi-stage Build&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• DockerHub Push&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Vulnerability Scan&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#ffff00;" parent="1" vertex="1">
-          <mxGeometry x="1220" y="240" width="120" height="80" as="geometry" />
+          <mxGeometry x="1200" y="240" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="27" value="&lt;b&gt;Deployment&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;• Image Tagging&lt;/span&gt;&lt;/div&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Security Scanning&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;• Cache Optimization&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#ffff00;" parent="1" vertex="1">
-          <mxGeometry x="1380" y="240" width="120" height="80" as="geometry" />
+          <mxGeometry x="1360" y="240" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="28" value="INFRASTRUCTURE DOCKER" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;fillColor=#ffccff;strokeColor=#ff00ff;" parent="1" vertex="1">
-          <mxGeometry x="1200" y="360" width="320" height="40" as="geometry" />
+          <mxGeometry x="1180" y="360" width="320" height="40" as="geometry" />
         </mxCell>
         <mxCell id="29" value="&lt;b&gt;Frontend Container&lt;br&gt;&lt;/b&gt;React 19 + Vite&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffddff;strokeColor=#ff55ff;" parent="1" vertex="1">
-          <mxGeometry x="1220" y="420" width="120" height="60" as="geometry" />
+          <mxGeometry x="1200" y="420" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="30" value="&lt;b&gt;Backend Container&lt;br&gt;&lt;/b&gt;NestJS 11 + GraphQL&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffddff;strokeColor=#ff55ff;" parent="1" vertex="1">
-          <mxGeometry x="1380" y="420" width="120" height="60" as="geometry" />
+          <mxGeometry x="1360" y="420" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="31" value="&lt;b&gt;Redis Container&lt;br&gt;&lt;/b&gt;IoRedis 5.x&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffddff;strokeColor=#ff55ff;" parent="1" vertex="1">
-          <mxGeometry x="1300" y="490" width="120" height="60" as="geometry" />
+          <mxGeometry x="1280" y="490" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="33" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;strokeColor=#ff6600;" parent="1" source="5" target="8" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
@@ -213,7 +213,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="47" value="&lt;b&gt;LÉGENDE DES FLUX&lt;br&gt;&lt;/b&gt;🔵 Requêtes GraphQL&lt;br&gt;🔴 Events Queue&lt;br&gt;🟢 Processing Jobs&lt;br&gt;🟣 Database Access&lt;br&gt;🟢&amp;nbsp;Module Dependencies" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;" parent="1" vertex="1">
-          <mxGeometry x="40" y="400" width="200" height="120" as="geometry" />
+          <mxGeometry x="240" y="360" width="200" height="120" as="geometry" />
         </mxCell>
         <mxCell id="48" value="FLUX DE CRÉATION/SUPPRESSION DE DOCUMENT" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=14;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="40" y="540" width="400" height="30" as="geometry" />
