@@ -51,6 +51,192 @@
 			"description": "Endpoints REST de l'API"
 		},
 		{
+			"name": "GraphQL - Authentication",
+			"item": [
+				{
+					"name": "Connexion (Login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Extraction automatique du token JWT",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.login && response.data.login.access_token) {",
+									"        pm.collectionVariables.set('authToken', response.data.login.access_token);",
+									"        pm.collectionVariables.set('currentUser', JSON.stringify(response.data.login.user));",
+									"        console.log('Token JWT sauvegardé automatiquement');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($loginInput: LoginInput!) { login(loginInput: $loginInput) { access_token user { id email username role createdAt updatedAt } } }\",\n  \"variables\": {\n    \"loginInput\": {\n      \"email\": \"admin@example.com\",\n      \"password\": \"password\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Connecte un utilisateur avec email/mot de passe et récupère le token JWT"
+					},
+					"response": []
+				},
+				{
+					"name": "Inscription (Register)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Extraction automatique du token JWT",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.register && response.data.register.access_token) {",
+									"        pm.collectionVariables.set('authToken', response.data.register.access_token);",
+									"        pm.collectionVariables.set('currentUser', JSON.stringify(response.data.register.user));",
+									"        console.log('Token JWT sauvegardé automatiquement après inscription');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($registerInput: RegisterInput!) { register(registerInput: $registerInput) { access_token user { id email username role createdAt updatedAt } } }\",\n  \"variables\": {\n    \"registerInput\": {\n      \"email\": \"{{$randomEmail}}\",\n      \"username\": \"{{$randomUserName}}\",\n      \"password\": \"motdepasse123\",\n      \"role\": \"USER\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Inscrit un nouvel utilisateur et récupère le token JWT (utilise des variables Postman aléatoires)"
+					},
+					"response": []
+				},
+				{
+					"name": "Inscription Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Extraction automatique du token JWT",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.register && response.data.register.access_token) {",
+									"        pm.collectionVariables.set('authToken', response.data.register.access_token);",
+									"        pm.collectionVariables.set('currentUser', JSON.stringify(response.data.register.user));",
+									"        console.log('Token JWT Admin sauvegardé automatiquement');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($registerInput: RegisterInput!) { register(registerInput: $registerInput) { access_token user { id email username role createdAt updatedAt } } }\",\n  \"variables\": {\n    \"registerInput\": {\n      \"email\": \"{{$randomEmail}}\",\n      \"username\": \"admin-{{$randomUserName}}\",\n      \"password\": \"motdepasse123\",\n      \"role\": \"ADMIN\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Inscrit un nouvel utilisateur avec le rôle ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Mon Profil (Me) - Authentifié",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"description": "Token JWT requis pour l'authentification"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query { me { id email username role createdAt updatedAt } }\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Récupère les informations du profil de l'utilisateur authentifié (nécessite un token JWT valide)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints d'authentification GraphQL - Login, Register et profil utilisateur",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{authToken}}",
+						"type": "string"
+					}
+				]
+			}
+		},
+		{
 			"name": "GraphQL - Queries",
 			"item": [
 				{
@@ -439,6 +625,86 @@
 				}
 			],
 			"description": "Mutations GraphQL pour la création, modification et suppression de données"
+		},
+		{
+			"name": "GraphQL - Requêtes Protégées (Auth)",
+			"item": [
+				{
+					"name": "Créer un document (Authentifié)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"description": "Token JWT pour l'authentification"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation($input: CreateDocumentInput!) { createDocument(createDocumentInput: $input) { id title description fileUrl userId createdAt updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"title\": \"Document créé par utilisateur authentifié\",\n      \"description\": \"Document créé avec authentification\",\n      \"fileUrl\": \"https://example.com/auth-document.pdf\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Crée un document en tant qu'utilisateur authentifié (le userId sera automatiquement récupéré du token)"
+					},
+					"response": []
+				},
+				{
+					"name": "Mes documents (Authentifié)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"description": "Token JWT pour l'authentification"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"query { me { id email username role documents { id title description fileUrl createdAt updatedAt } } }\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Récupère le profil de l'utilisateur avec ses documents (nécessite authentification)"
+					},
+					"response": []
+				}
+			],
+			"description": "Requêtes GraphQL qui nécessitent une authentification JWT",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{authToken}}",
+						"type": "string"
+					}
+				]
+			}
 		}
 	],
 	"event": [
@@ -447,7 +713,13 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// Script global pour vérifier la présence du token",
+					"const authToken = pm.collectionVariables.get('authToken');",
+					"if (!authToken) {",
+					"    console.log('⚠️ Aucun token d\\'authentification trouvé. Utilisez d\\'abord Login ou Register.');",
+					"} else {",
+					"    console.log('✅ Token d\\'authentification présent');",
+					"}"
 				]
 			}
 		},
@@ -456,7 +728,12 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// Test global pour les erreurs d'authentification",
+					"if (pm.response.code === 401) {",
+					"    console.log('🔒 Erreur d\\'authentification - Token expiré ou invalide');",
+					"    pm.collectionVariables.unset('authToken');",
+					"    pm.collectionVariables.unset('currentUser');",
+					"}"
 				]
 			}
 		}
@@ -466,6 +743,18 @@
 			"key": "baseUrl",
 			"value": "http://localhost:3000",
 			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string",
+			"description": "Token JWT d'authentification (géré automatiquement)"
+		},
+		{
+			"key": "currentUser",
+			"value": "",
+			"type": "string",
+			"description": "Informations de l'utilisateur connecté (JSON stringifié)"
 		}
 	]
 }
